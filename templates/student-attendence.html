@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %} Login {% endblock %}
+
+<html>
+  <body>
+    <h1 class="header"> {{ value }} </h1>
+    <form action="{{ url_for('studentAttendence') }}" method="post">
+      <input type="text" name="value">
+      <input type="submit" value="Get value">
+    </form>
+  </body>
+</html>
