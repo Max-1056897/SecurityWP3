@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block title %} Login {% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block content %}
 
-    <h1 class="header"> {{ value }} </h1>
-    <form action="{{ url_for('studentAttendence') }}" method="post">
-      <input type="text" value="{{ value_generator }}" name="value">
-      <button type="submit" value"Get value" id="waarde">Get value</button>
-    </form>
+<form action="action_page.php">
+<div class="container">
+    <label for="studentNumber"><b>Studentnumber:</b></label>
+    <input type="studentNumber" class="form-control" id="studentNumber" name="studentNumber" placeholder="Enter studentnumber">
 
-
-{% endblock %}
+    <label for="attendenceCode"><b>Attendence code:</b></label>
+    <input type="attendenceCode" class="form-control" id="attendenceCode" name="attendenceCode" placeholder="Enter attendence code">
+</form> 
+{%endblock%}
