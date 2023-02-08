@@ -3,11 +3,23 @@
 
 {% block content %}
 
+<div class="sidenav_fix">
+  <div class="sidenav">
+    <a href="#">Attendence Code Generator</a>
+    <a href="#">Student Attendence Overview</a>
+    <a href="#">Info</a>
+    <a href="#">Contact</a>
+  </div>
+
+
     <h1 class="header"> {{ value }} </h1>
     <form action="{{ url_for('randomCodeGenerator') }}" method="post">
       <input class="text" type="text" value="{{ value_generator }}" name="value">
       <button type="submit" value="Get value" id="waarde">Get value</button>
     </form>
+  </div>
+
+    
 
 
 {% endblock %}
