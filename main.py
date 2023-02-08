@@ -1,7 +1,13 @@
-from flask import Flask
+from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
+from . import db
 
-app = Flask(__name__)
+main = Blueprint('main', __name__)
 
-if __name__ == '__main__':
-    app.run(debug=True) 
+@main.route('/')
+def index():
+    return 'Index'
+
+@main.route('/profile')
+def profile():
+    return 'Profile'

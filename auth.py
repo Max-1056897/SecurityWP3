@@ -10,23 +10,22 @@ FLASK_PORT = 81
 FLASK_DEBUG = True
 
 
-app = Flask(__name__)
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET','POST'])
 def login():
     return render_template("login.html")
 
-@app.route("/get_value", methods=["POST"])
+@auth.route("/get_value", methods=["POST"])
 def get_value():
-    low = 0
+    low = 100000
     high = 999999
     num = random.randint(low, high)
     value = num
     print (value)
     return value
 
-@app.route('/student-attendence', methods=['GET','POST'])
+@auth.route('/student-attendence', methods=['GET','POST'])
 def studentAttendence():
     get_value()
     #low = 0
@@ -66,5 +65,5 @@ def sign_up():
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+#if __name__ == '__main__':
+#     auth.run(debug=True)

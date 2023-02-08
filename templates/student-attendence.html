@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block title %} Login {% endblock %}
 
-<html>
-  <body>
+{% block content %}
+
     <h1 class="header"> {{ value }} </h1>
     <form action="{{ url_for('studentAttendence') }}" method="post">
-      <input type="text" name="value">
-      <input type="submit" value="Get value">
+      <input type="text" value="{{ value_generator }}" name="value">
+      <button type="submit" value"Get value" id="waarde">Get value</button>
     </form>
-  </body>
-</html>
+
+
+{% endblock %}
