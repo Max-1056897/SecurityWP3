@@ -131,10 +131,6 @@ form {
   padding: 16px;
 }
 
-.sidenav_fix {
-  margin-top: -24px;
-}
-
 /* Full-width input fields */
 input[type=text], input[type=password] {
   width: 100%;
@@ -200,6 +196,10 @@ a {
   background-color: white; /* Black */
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 20px;
+}
+
+.sidenav_fix {
+  margin-top: -24px;
 }
 
 /* The navigation menu links */
