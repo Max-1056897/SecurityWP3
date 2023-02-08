@@ -132,7 +132,7 @@ form {
 }
 
 .sidenav_fix {
-  margin-top: 0px;
+  margin-top: -24px;
 }
 
 /* Full-width input fields */
