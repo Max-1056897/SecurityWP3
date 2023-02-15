@@ -3,23 +3,25 @@
 
 {% block content %}
 
-<form action="action_page.php">
-<div class="container">
-    <label for="studentNumber"><b>Student number:</b></label>
-    <input type="studentNumber" class="form-control" id="studentNumber" name="studentNumber" placeholder="Enter student number">
 
-    <label for="attendenceCode"><b>Attendence code:</b></label>
-    <input type="attendenceCode" class="form-control" id="attendenceCode" name="attendenceCode" placeholder="Enter attendence code">
+<form action="" method="POST">
+    {{ form.hidden_tag() }}
+    <title>Login</title>
+    <div class="container">
+        <label for="studentNumber"><b>Student number:</b></label>
+        <input type="studentNumber" class="form-control" placeholder="Enter your full name" value="{{ request.form.username }}">
+        <label for="attendenceCode"><b>Attendence code:</b></label>
+        <input type="attendenceCode" class="form-control" name="attendenceCode" placeholder="Enter attendence code" value="{{ request.form.password }}">
+        &nbsp;
+        <button class="bg-green-400 hover:bg-green-400 text-white font-bold py-2 px-4 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">Log In</button>
+    </form> 
     &nbsp;
-    <button id="waarde">Submit Attendence</button>
-</form> 
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;
+    &nbsp;
+    &nbsp;
+    &nbsp;
 
 
-<form action="action_page">
+<form action="">
 
 </form>
 {%endblock%}
