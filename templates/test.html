@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+</head>
+<body>
+    <div id="data-container"></div>
+    <script>
+        const dataContainer = document.getElementById('data-container');
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+          if (this.readyState === 4 && this.status === 200) {
+            const data = JSON.parse(this.responseText);
+            data.forEach(row => {
+              const rowElement = document.createElement('div');
+              rowElement.textContent = row[0] + ' ' + row[1]; // Replace with your column names
+              dataContainer.appendChild(rowElement);
+            });
+          }
+        };
+        xhr.open('GET', '/data');
+        xhr.send();
+      </script>
+</body>
+</html>

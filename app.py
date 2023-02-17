@@ -1,7 +1,7 @@
 import os.path
 import sqlite3
 import os.path
-from flask import Flask
+from flask import Flask, jsonify
 from flask import render_template, url_for, flash, request, redirect, send_file
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -90,9 +90,29 @@ def redirectpage():
     return redirect("login")
 
 @app.route("/leerling-dashboard", methods=['GET','POST'])
-@login_required
+# @login_required
 def leerlingdashboard():
-    return render_template('leerling-dashboard.html')
+     conn = sqlite3.connect(DATABASE)
+     cursor = conn.cursor()
+     cursor.execute('SELECT name FROM lessen')
+     vak1_database = cursor.fetchone()[0]
+     vak2_slc = cursor.fetchone()[0]
+     vak3_PE2 = cursor.fetchone()[0]
+     conn.close()
+     return render_template('leerling-dashboard.html', vak1_database=vak1_database, vak2_slc=vak2_slc, vak3_PE2=vak3_PE2 )
+
+
+
+
+
+@app.route('/data')
+def get_data():
+    conn = sqlite3.connect(DATABASE)
+    cur = conn.cursor()
+    cur.execute('SELECT name FROM lessen WHERE id = ?', (1,))
+    rows = cur.fetchone()
+    conn.close()
+    return jsonify(rows)
 
 
 

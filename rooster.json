@@ -2,8 +2,8 @@
     "lessen": [
       {
         "id": 0, 
-        "name": "Mathematics",
-        "teacher": "Ms. Johnson"
+        "name": "Database",
+        "teacher": "Gayatri Goyal"
       },
       {
         "id": 1, 
@@ -12,23 +12,28 @@
       },
       {
         "id": 2, 
-        "name": "Biology",
-        "teacher": "Dr. Patel"
+        "name": "Studieloopbaancoaching",
+        "teacher": "Dana Mol"
       },
       {
         "id": 3, 
-        "name": "Chemistry",
-        "teacher": "Mr. Lee"
+        "name": "Professionele vorming 2",
+        "teacher": "Jelle van der Loo"
       },
       {
         "id": 4, 
-        "name": "History",
-        "teacher": "Ms. Rodriguez"
+        "name": "User Experience",
+        "teacher": "Tjidde Maijer"
       },
       {
         "id": 5, 
-        "name": "Physical Education",
-        "teacher": "Coach Davis"
+        "name": "Basis Wiskunde ",
+        "teacher": "Bas van Rijswijk"
+      },
+      {
+        "id": 6, 
+        "name": "Werkplaats 3",
+        "teacher": "Jelle van der Loo, Eva Schaap en Tjidde Maijer"
       }
     ]
   }
