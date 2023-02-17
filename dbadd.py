@@ -30,6 +30,8 @@ for row in data['lessen']:
     c.execute('''INSERT INTO lessen (id, name, teacher) VALUES (?, ?, ?)''',
               (row['id'], row['name'], row['teacher']))
 
+# c.execute('''DELETE FROM lessen WHERE ID = 0''')
+
 conn.commit()
 
 conn.close()
