@@ -7,31 +7,26 @@
       },
       {
         "id": 1, 
-        "name": "English Language and Literature",
-        "teacher": "Mr. Brown"
-      },
-      {
-        "id": 2, 
         "name": "Studieloopbaancoaching",
         "teacher": "Dana Mol"
       },
       {
-        "id": 3, 
+        "id": 2, 
         "name": "Professionele vorming 2",
         "teacher": "Jelle van der Loo"
       },
       {
-        "id": 4, 
+        "id": 3, 
         "name": "User Experience",
         "teacher": "Tjidde Maijer"
       },
       {
-        "id": 5, 
+        "id": 4, 
         "name": "Basis Wiskunde ",
         "teacher": "Bas van Rijswijk"
       },
       {
-        "id": 6, 
+        "id": 5, 
         "name": "Werkplaats 3",
         "teacher": "Jelle van der Loo, Eva Schaap en Tjidde Maijer"
       }
