@@ -1,5 +1,5 @@
 import sqlite3
-sqlite3.connect('aanmeldingstool')
+sqlite3.connect('aanmeldingstool departments_json')
 
 conn = sqlite3.connect('aanmeldingstool') 
 c = conn.cursor()
