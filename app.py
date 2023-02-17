@@ -33,7 +33,7 @@ class LoginForm(FlaskForm):
  def validate_username(self, username):
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT username FROM Users where username = (?)",[username.data])
+    curs.execute("SELECT username FROM users where username = (?)",[username.data])
     valusername = curs.fetchone()
     if valusername is None:
       raise ValidationError('This username ID is not registered. Please register before login')
@@ -59,7 +59,7 @@ class User(UserMixin):
 def load_user(user_id):
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT * from Users where user_id = (?)",[user_id])
+    curs.execute("SELECT * from users where user_id = (?)",[user_id])
     lu = curs.fetchone()
     if lu is None:
       return None
@@ -75,7 +75,7 @@ def login():
   if form.validate_on_submit():
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT * FROM Users where username = (?)",    [form.username.data])
+    curs.execute("SELECT * FROM users where username = (?)",    [form.username.data])
     user = curs.fetchone()
     Us = load_user(user[0])
     if form.username.data == Us.username and form.password.data == Us.password:
