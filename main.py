@@ -1,6 +1,5 @@
 import os.path
 import sqlite3
-import os.path
 from flask import Flask, jsonify
 from flask import render_template, url_for, flash, request, redirect, send_file
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
@@ -33,7 +32,7 @@ class LoginForm(FlaskForm):
  def validate_username(self, username):
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT username FROM users where username = (?)",[username.data])
+    curs.execute("SELECT username FROM Users where username = (?)",[username.data])
     valusername = curs.fetchone()
     if valusername is None:
       raise ValidationError('This username ID is not registered. Please register before login')
@@ -59,7 +58,7 @@ class User(UserMixin):
 def load_user(user_id):
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT * from users where user_id = (?)",[user_id])
+    curs.execute("SELECT * from Users where id = (?)",[user_id])
     lu = curs.fetchone()
     if lu is None:
       return None
@@ -70,12 +69,12 @@ def load_user(user_id):
 @app.route("/login", methods=['GET','POST'])
 def login():
   if current_user.is_authenticated:
-    return redirect(url_for('leerlingdashboard'))
+    return redirect(url_for('leerling-dashboard'))
   form = LoginForm()
   if form.validate_on_submit():
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT * FROM users where username = (?)",    [form.username.data])
+    curs.execute("SELECT * FROM Users where username = (?)",    [form.username.data])
     user = curs.fetchone()
     Us = load_user(user[0])
     if form.username.data == Us.username and form.password.data == Us.password:
@@ -85,12 +84,8 @@ def login():
         flash('Login Unsuccessfull.')
   return render_template('login.html',title='Login', form=form)
 
-@app.route("/")
-def redirectpage():
-    return redirect("login")
-
 @app.route("/leerling-dashboard", methods=['GET','POST'])
-# @login_required
+@login_required
 def leerlingdashboard():
      conn = sqlite3.connect(DATABASE)
      cursor = conn.cursor()
@@ -102,9 +97,6 @@ def leerlingdashboard():
      return render_template('leerling-dashboard.html', vak1_database=vak1_database, vak2_slc=vak2_slc, vak3_PE2=vak3_PE2 )
 
 
-
-
-
 @app.route('/data')
 def get_data():
     conn = sqlite3.connect(DATABASE)
@@ -114,7 +106,9 @@ def get_data():
     conn.close()
     return jsonify(rows)
 
-
+@app.route("/")
+def redirectpage():
+    return redirect("login")
 
 if __name__ == "__main__":
     app.run(host=FLASK_IP, port=FLASK_PORT, debug=FLASK_DEBUG)

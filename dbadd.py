@@ -22,15 +22,21 @@ dbm = DatabaseModel(DATABASE)
 conn = sqlite3.connect(DATABASE)
 c = conn.cursor()
 
-# c.execute('''CREATE TABLE lessen
-#              (id INTEGER PRIMARY KEY, name TEXT, teacher TEXT)''')
+# c.execute('''CREATE TABLE Users
+#              (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)''')
 
+# c.execute("DROP TABLE users")
 
-for row in data['lessen']:
-    c.execute('''INSERT INTO lessen (id, name, teacher) VALUES (?, ?, ?)''',
-              (row['id'], row['name'], row['teacher']))
+# c.execute("ALTER TABLE users ADD COLUMN id INTEGER PRIMARY KEY AUTOINCREMENT;")
+
+# c.execute("ALTER TABLE users DROP COLUMN user_id;")
+# for row in data['lessen']:
+#     c.execute('''INSERT INTO lessen (id, name, teacher) VALUES (?, ?, ?)''',
+#               (row['id'], row['name'], row['teacher']))
 
 # c.execute('''DELETE FROM lessen WHERE ID = 6''')
+
+c.execute("INSERT INTO Users(username, password) VALUES (?,?)", ('admin', 'admin'))
 
 conn.commit()
 
