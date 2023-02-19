@@ -3,32 +3,38 @@
       {
         "id": 0, 
         "name": "Database",
-        "teacher": "Gayatri Goyal"
+        "teacher": "Gayatri Goyal",
+        "classroom": "Online"
       },
       {
         "id": 1, 
         "name": "Studieloopbaancoaching",
-        "teacher": "Dana Mol"
+        "teacher": "Dana Mol",
+        "classroom": "Online"
       },
       {
         "id": 2, 
         "name": "Professionele vorming 2",
-        "teacher": "Jelle van der Loo"
+        "teacher": "Jelle van der Loo",
+        "classroom": "Online"
       },
       {
         "id": 3, 
         "name": "User Experience",
-        "teacher": "Tjidde Maijer"
+        "teacher": "Tjidde Maijer",
+        "classroom": "Online"
       },
       {
         "id": 4, 
         "name": "Basis Wiskunde ",
-        "teacher": "Bas van Rijswijk"
+        "teacher": "Bas van Rijswijk",
+        "classroom": "Online"
       },
       {
         "id": 5, 
         "name": "Werkplaats 3",
-        "teacher": "Jelle van der Loo, Eva Schaap en Tjidde Maijer"
+        "teacher": "Jelle van der Loo, Eva Schaap en Tjidde Maijer",
+        "classroom": "Online"
       }
     ]
   }

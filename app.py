@@ -8,6 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, ValidationError
 from lib.tablemodel import DatabaseModel
+from dbadd import automatisch_db_fill
 
 # Flask Settings
 LISTEN_ALL = "0.0.0.0"
@@ -98,8 +99,29 @@ def leerlingdashboard():
      vak1_database = cursor.fetchone()[0]
      vak2_slc = cursor.fetchone()[0]
      vak3_PE2 = cursor.fetchone()[0]
+     cursor.execute('SELECT teacher FROM lessen')
+     vak1_docent = cursor.fetchone()[0]
+     vak2_docent = cursor.fetchone()[0]
+     vak3_docent = cursor.fetchone()[0]
+     cursor.execute('SELECT classroom FROM lessen')
+     vak1_classroom = cursor.fetchone()[0]
+     vak2_classroom = cursor.fetchone()[0]
+     vak3_classroom = cursor.fetchone()[0]
      conn.close()
-     return render_template('leerling-dashboard.html', vak1_database=vak1_database, vak2_slc=vak2_slc, vak3_PE2=vak3_PE2 )
+     automatisch_db_fill()
+     return render_template(
+          'leerling-dashboard.html',
+           vak1_database=vak1_database, 
+           vak2_slc=vak2_slc, 
+           vak3_PE2=vak3_PE2,
+           vak1_docent=vak1_docent,
+           vak2_docent=vak2_docent,
+           vak3_docent=vak3_docent,
+           vak1_classroom=vak1_classroom,
+           vak2_classroom=vak2_classroom,
+           vak3_classroom=vak3_classroom,
+
+           )
 
 
 
@@ -118,3 +140,5 @@ def get_data():
 
 if __name__ == "__main__":
     app.run(host=FLASK_IP, port=FLASK_PORT, debug=FLASK_DEBUG)
+
+
