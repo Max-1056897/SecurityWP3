@@ -1,6 +1,5 @@
 import os.path
 import sqlite3
-import os.path
 from flask import Flask, jsonify
 from flask import render_template, url_for, flash, request, redirect, send_file
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
@@ -60,7 +59,7 @@ class User(UserMixin):
 def load_user(user_id):
     conn = sqlite3.connect(DATABASE)
     curs = conn.cursor()
-    curs.execute("SELECT * from Users where user_id = (?)",[user_id])
+    curs.execute("SELECT * from Users where id = (?)",[user_id])
     lu = curs.fetchone()
     if lu is None:
       return None
@@ -71,7 +70,7 @@ def load_user(user_id):
 @app.route("/login", methods=['GET','POST'])
 def login():
   if current_user.is_authenticated:
-    return redirect(url_for('leerlingdashboard'))
+    return redirect(url_for('leerling-dashboard'))
   form = LoginForm()
   if form.validate_on_submit():
     conn = sqlite3.connect(DATABASE)
@@ -86,12 +85,8 @@ def login():
         flash('Login Unsuccessfull.')
   return render_template('login.html',title='Login', form=form)
 
-@app.route("/")
-def redirectpage():
-    return redirect("login")
-
 @app.route("/leerling-dashboard", methods=['GET','POST'])
-# @login_required
+@login_required
 def leerlingdashboard():
      conn = sqlite3.connect(DATABASE)
      cursor = conn.cursor()
@@ -124,9 +119,6 @@ def leerlingdashboard():
            )
 
 
-
-
-
 @app.route('/data')
 def get_data():
     conn = sqlite3.connect(DATABASE)
@@ -136,7 +128,9 @@ def get_data():
     conn.close()
     return jsonify(rows)
 
-
+@app.route("/")
+def redirectpage():
+    return redirect("login")
 
 if __name__ == "__main__":
     app.run(host=FLASK_IP, port=FLASK_PORT, debug=FLASK_DEBUG)
