@@ -42,12 +42,25 @@
               <input type="text" class="form-control" name="code">
             </td>
             <td class="more-info">
-              <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#les{{les.id}}-info" aria-expanded="false" aria-controls="les{{les.id}}-info">Meer informatie</button>
-              <div class="collapse" id="les{{les.id}}-info">
-                <div class="card card-body">
-                  <p><strong>Leraar:</strong> {{les.leraar}}</p>
-                  <p><strong>Lokaal:</strong> {{les.lokaal}}</p>
-                  <p><strong>Beschrijving:</strong> {{les.beschrijving}}</p>
+              <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#les{{les.id}}-modal">Meer informatie</button>
+              <div class="modal fade" id="les{{les.id}}-modal" tabindex="-1" role="dialog" aria-labelledby="les{{les.id}}-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="les{{les.id}}-modal-label">{{les.vak}} - {{les.datum}}</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p><strong>Leraar:</strong> {{les.leraar}}</p>
+                      <p><strong>Lokaal:</strong> {{les.lokaal}}</p>
+                      <p><strong>Beschrijving:</strong> {{les.beschrijving}}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluiten</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </td>
@@ -66,12 +79,11 @@
           var aanwezigheid = $("select[name='aanwezigheid']").map(function(){return $(this).val();}).get();
           var reden_afwezigheid = $("input[name='reden_afwezigheid']").map(function(){return $(this).val();}).get();
           var code = $("input[name='code']").map(function(){return $(this).val();}).get();
-          var data = {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid, "code": code};
-          $.post("/aanwezigheid", data, function(response) {
-            alert(response);
+          $.post("/aanwezigheid", {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid, "code": code}, function(data) {
+            alert(data);
           });
         });
       });
-    </script>  
+    </script>
   </body>
 </html>
