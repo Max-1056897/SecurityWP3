@@ -148,7 +148,7 @@ def docent_lessen_overzicht():
 ## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
 @app.route('/docent/lessen')
 def docent_alle_lessen():
-    docent_id = 1  # Vervang dit door de daadwerkelijke docent_id (bijvoorbeeld opgehaald uit de sessie)
+    docent_id = 1  
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
     c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
