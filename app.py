@@ -114,5 +114,48 @@ def les(id):
     return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
 
 
+
+## DIT IS ALLEMAAL VOOR DE TOEVOEGEN LES PAGINA
+@app.route('/docent/lessen/toevoegen')
+def docent_lessen_toevoegen():
+    return render_template('docent_lessen.html')
+
+@app.route('/docent/lessen/toevoegen', methods=['POST'])
+def docent_lessen_toevoegen_post():
+    vak = request.form['vak']
+    datum = request.form['datum']
+    starttijd = request.form['starttijd']
+    eindtijd = request.form['eindtijd']
+    docent_id = request.form['docent_id']
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('docent_lessen_overzicht'))
+
+@app.route('/docent/lessen/overzicht')
+def docent_lessen_overzicht():
+    docent_id = 1 
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+    result = c.fetchall()
+    conn.close()
+    return render_template('docent_lessen_overzicht.html', lessen=result)
+
+
+## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
+@app.route('/docent/lessen')
+def docent_alle_lessen():
+    docent_id = 1  # Vervang dit door de daadwerkelijke docent_id (bijvoorbeeld opgehaald uit de sessie)
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+    result = c.fetchall()
+    conn.close()
+    return render_template('docent_overzicht_lessen.html', lessen=result)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
