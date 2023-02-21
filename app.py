@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = "geheime-sleutel" # voeg hier je eigen geheime sleutel toe
+app.secret_key = "Hogeschool Rotterdam" 
 
 @app.route("/")
 def index():
@@ -44,10 +44,7 @@ def login_docent():
     else:
         return render_template("index.html", error="Ongeldige gebruikersnaam of wachtwoord")
 
-# route voor het inzien van het leerling dashboard
-# route voor het dashboard van de leerling
 
-# functie om verbinding te maken met de database
 def get_db_connection():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
@@ -62,7 +59,6 @@ def leerling_dashboard():
     conn.close()
     return render_template('leerling_dashboard.html', lessen=lessen)
 
-# route voor het opslaan van de aanwezigheidsstatus en reden van afwezigheid
 @app.route('/aanwezigheid', methods=['POST'])
 def aanwezigheid():
     conn = get_db_connection()
@@ -76,7 +72,6 @@ def aanwezigheid():
     conn.close()
     return 'Aanwezigheid opgeslagen!'
 
-# Route voor het docenten dashboard
 @app.route('/docent_dashboard')
 def docent_dashboard():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -86,7 +81,6 @@ def docent_dashboard():
     conn.close()
     return render_template('docent_dashboard.html', lessen=lessen)
 
-# Route voor het tonen van de aanwezigheid per les
 @app.route('/les/<int:id>')
 def les_overzicht(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -96,7 +90,6 @@ def les_overzicht(id):
     conn.close()
     return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
 
-# Route voor het toevoegen van een les
 @app.route('/toevoegen_les', methods=['POST'])
 def toevoegen_les():
     vak = request.form['vak']

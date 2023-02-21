@@ -1,17 +1,13 @@
 import sqlite3
 
-# maak een nieuwe database connectie
 conn = sqlite3.connect('aanwezigheidssysteem.db')
 
-# maak een cursor-object waarmee we SQL-queries kunnen uitvoeren
 c = conn.cursor()
 
-# voeg een voorbeeld leerling toe
 c.execute("INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES (?, ?, ?, ?)", ("David Coffa", "0994739", "admin", "rooster1"))
 c.execute("INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES (?, ?, ?, ?)", ("Max Looij", "1056897", "admin", "rooster1"))
 c.execute("INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES (?, ?, ?, ?)", ("Wesley", "12345", "admin", "rooster1"))
 
-# voeg een voorbeeld docent toe
 c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)", ("Jelle van der Loo", "jellevanderloo", "admin"))
 c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)", ("Dana Mol", "danamol", "admin"))
 c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)", ("Gayatri Goyal", "gayatrigoyal", "admin"))
@@ -20,9 +16,6 @@ c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?,
 c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)", ("Eva Schaap", "evaschaap", "admin"))
 
 
-
-
-# voeg een paar voorbeeld lessen toe
 c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", ("Databases", "06-03-2023", "8:30", "11:20", 1))
 c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", ("Studieloopbaancoaching", "06-03-2023", "11:20", "13:00", 1))
 c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", ("Proffesionele vorming 2", "06-03-2023", "13:00", "15:50", 1))
@@ -31,10 +24,8 @@ c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUE
 c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", ("Basis Wiskunde", "07-03-2023", "13:00", "14:40", 1))
 c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", ("Werkplaats 3", "08-03-2023", "8:30", "16:40", 1))
 
-# voeg een voorbeeld aanwezigheid toe
 c.execute("INSERT INTO aanwezigheid (leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?)", (1, 1, 1, None))
 
-# sla de veranderingen op en sluit de database connectie
 conn.commit()
 conn.close()
 
