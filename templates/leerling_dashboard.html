@@ -3,6 +3,7 @@
   <head>
     <title>Leerling Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/leerling_dashboard.css">
   </head>
   <body>
     <div class="container">
@@ -17,6 +18,8 @@
             <th>Eindtijd</th>
             <th>Aanwezigheid</th>
             <th>Reden afwezigheid</th>
+            <th>Code</th>
+            <th class="more-info"></th>
           </tr>
         </thead>
         <tbody>
@@ -35,6 +38,19 @@
             <td>
               <input type="text" class="form-control" name="reden_afwezigheid">
             </td>
+            <td>
+              <input type="text" class="form-control" name="code">
+            </td>
+            <td class="more-info">
+              <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#les{{les.id}}-info" aria-expanded="false" aria-controls="les{{les.id}}-info">Meer informatie</button>
+              <div class="collapse" id="les{{les.id}}-info">
+                <div class="card card-body">
+                  <p><strong>Leraar:</strong> {{les.leraar}}</p>
+                  <p><strong>Lokaal:</strong> {{les.lokaal}}</p>
+                  <p><strong>Beschrijving:</strong> {{les.beschrijving}}</p>
+                </div>
+              </div>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -49,11 +65,13 @@
         $("#submit").click(function() {
           var aanwezigheid = $("select[name='aanwezigheid']").map(function(){return $(this).val();}).get();
           var reden_afwezigheid = $("input[name='reden_afwezigheid']").map(function(){return $(this).val();}).get();
-          $.post("/aanwezigheid", {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid}, function(data) {
-            alert(data);
+          var code = $("input[name='code']").map(function(){return $(this).val();}).get();
+          var data = {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid, "code": code};
+          $.post("/aanwezigheid", data, function(response) {
+            alert(response);
           });
         });
       });
-    </script>
+    </script>  
   </body>
 </html>
