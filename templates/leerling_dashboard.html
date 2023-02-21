@@ -1,0 +1,61 @@
+<!-- leerling_dashboard.html -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leerling Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Leerling Dashboard</h1>
+      <h2>Mijn lessen</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Vak</th>
+            <th>Datum</th>
+            <th>Starttijd</th>
+            <th>Eindtijd</th>
+            <th>Aanwezigheid</th>
+            <th>Reden afwezigheid</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for les in lessen %}
+          <tr>
+            <td>{{ les.vak }}</td>
+            <td>{{ les.datum }}</td>
+            <td>{{ les.starttijd }}</td>
+            <td>{{ les.eindtijd }}</td>
+            <td>
+              <select class="form-control" name="aanwezigheid">
+                <option value="1">Aanwezig</option>
+                <option value="0">Afwezig</option>
+              </select>
+            </td>
+            <td>
+              <input type="text" class="form-control" name="reden_afwezigheid">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button class="btn btn-primary" id="submit">Opslaan</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $("#submit").click(function() {
+          var aanwezigheid = $("select[name='aanwezigheid']").map(function(){return $(this).val();}).get();
+          var reden_afwezigheid = $("input[name='reden_afwezigheid']").map(function(){return $(this).val();}).get();
+          $.post("/aanwezigheid", {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid}, function(data) {
+            alert(data);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Docent Dashboard</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Docent Dashboard</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Lessen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Toevoegen Les</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <br>
+    <!-- Les overzicht -->
+    <div class="container">
+      <h2>Les overzicht</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Vak</th>
+            <th>Datum</th>
+            <th>Starttijd</th>
+            <th>Eindtijd</th>
+            <th>Aanwezigheid</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for les in lessen %}
+            <tr>
+              <td>{{ les[1] }}</td>
+              <td>{{ les[2] }}</td>
+              <td>{{ les[3] }}</td>
+              <td>{{ les[4] }}</td>
+              <td><a href="/les/{{ les[0] }}">Bekijk</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Les details -->
+    <div class="container">
+      <h2>Les details</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Leerling</th>
+            <th>Aanwezigheid</th>
+            <th>Reden afwezig</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for aanwezigheid in aanwezigheden %}
+            <tr>
+              <td>{{ aanwezigheid[1] }}</td>
+              <td>{{ aanwezigheid[3] }}</td>
+              <td>{{ aanwezigheid[4] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Toevoegen les -->
+    <div class="container">
+      <h2>Toevoegen les</h2>
+      <form method action="/toevoegen_les">
+        <div class="form-group">
+          <label for="vak">Vak:</label>
+          <input type="text" class="form-control" id="vak" name="vak" required>
+        </div>
+        <div class="form-group">
+          <label for="datum">Datum:</label>
+          <input type="date" class="form-control" id="datum" name="datum" required>
+        </div>
+        <div class="form-group">
+          <label for="starttijd">Starttijd:</label>
+          <input type="time" class="form-control" id="starttijd" name="starttijd" required>
+        </div>
+        <div class="form-group">
+          <label for="eindtijd">Eindtijd:</label>
+          <input type="time" class="form-control" id="eindtijd" name="eindtijd" required>
+        </div>
+        <div class="form-group">
+          <label for="docent">Docent:</label>
+          <select class="form-control" id="docent" name="docent" required>
+            {% for docent in docenten %}
+              <option value="{{ docent[0] }}">{{ docent[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Toevoegen</button>
+      </form>
+    </div>
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  </body>
+</html>
+
