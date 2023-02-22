@@ -64,7 +64,7 @@ def aanwezigheid():
     conn = get_db_connection()
     c = conn.cursor()
     aanwezigheid = request.form.getlist('aanwezigheid')
-    reden_afwezigheid = request.form.getlist('reden_afwezigheid')
+    reden_afwezigheid = request.form.getlist('reden')
     for i in range(len(aanwezigheid)):
         c.execute('INSERT INTO aanwezigheid (leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?)',
                   (1, i+1, aanwezigheid[i], reden_afwezigheid[i]))
