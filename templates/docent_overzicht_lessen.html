@@ -2,31 +2,30 @@
 <html>
 <head>
 	<title>Dashboard Docent - Alle lessen</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Docent Dashboard</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="/docent_dashboard">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/docent/lessen">Lessen</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">Docent Dashboard</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="/docent_dashboard">Home</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/docent/lessen">Lessen</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	&nbsp;
+	&nbsp;
 	<div class="container">
 		<h2><b>Alle lessen</b></h2>
 		<table class="table">
@@ -40,40 +39,69 @@
 					<th></th>
 				</tr>
 			</thead>
-			<tbody>
-				{% for les in lessen %}
-				<tr>
-					<td>{{ les[1] }}</td>
-					<td>{{ les[2] }}</td>
-					<td>{{ les[3] }}</td>
-					<td>{{ les[4] }}</td>
-					<td>{{ les[5] }}</td>
-					<td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal{{ les[0] }}">Meer informatie</button></td>
-				</tr>
-				<div class="modal fade" id="myModal{{ les[0] }}" role="dialog">
-					<div class="modal-dialog">
-			
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">Lesinformatie</h4>
-							</div>
-							<div class="modal-body">
-								<p>Vak: {{ les[1] }}</p>
-								<p>Datum: {{ les[2] }}</p>
-								<p>Starttijd: {{ les[3] }}</p>
-								<p>Eindtijd: {{ les[4] }}</p>
-								<p>Docent: {{ les[5] }}</p>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Sluiten</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				{% endfor %}
+			<tbody id="lessen-lijst">
 			</tbody>
 		</table>
 	</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.all.min.js"></script>
+	<script>
+		function getLessen() {
+			$.ajax({
+				url: "lessen.json",
+				dataType: "json",
+				success: function(data) {
+					var lessenLijst = "";
+					$.each(data, function(key, value) {
+						lessenLijst += "<tr>";
+						lessenLijst += "<td>" + value.vak + "</td>";
+						lessenLijst += "<td>" + value.datum + "</td>";
+						lessenLijst += "<td>" + value.starttijd + "</td>";
+						lessenLijst += "<td>" + value.eindtijd + "</td>";
+						lessenLijst += "<td>" + value.docent + "</td>";
+						lessenLijst += "<td><button type='button' class='btn btn-info' data-toggle='modal' data-target='#myModal" + value.id + "'>Meer informatie</button></td>";
+						lessenLijst += "</tr>";
+
+						// modal
+						lessenLijst += "<div class='modal fade' id='myModal" + value.id + "' role='dialog'>";
+						lessenLijst += "<div class='modal-dialog'>";
+						lessenLijst += "<div class='modal-content'>";
+												lessenLijst += "<div class='modal-header'>";
+						lessenLijst += "<button type='button' class='close' data-dismiss='modal'>&times;</button>";
+						lessenLijst += "<h4 class='modal-title'>Lesinformatie</h4>";
+						lessenLijst += "</div>";
+						lessenLijst += "<div class='modal-body'>";
+						lessenLijst += "<p>Vak: " + value.vak + "</p>";
+						lessenLijst += "<p>Datum: " + value.datum + "</p>";
+						lessenLijst += "<p>Starttijd: " + value.starttijd + "</p>";
+						lessenLijst += "<p>Eindtijd: " + value.eindtijd + "</p>";
+						lessenLijst += "<p>Docent: " + value.docent + "</p>";
+						lessenLijst += "</div>";
+						lessenLijst += "<div class='modal-footer'>";
+						lessenLijst += "<button type='button' class='btn btn-default' data-dismiss='modal'>Sluiten</button>";
+						lessenLijst += "</div>";
+					lessenLijst += "</div>";
+					lessenLijst += "</div>";
+					lessenLijst += "</div>";
+				});
+				$("#lessen-lijst").html(lessenLijst);
+			},
+			error: function() {
+				Swal.fire({
+					icon: 'error',
+					title: 'Oops...',
+					text: 'Er is een fout opgetreden bij het ophalen van de lessen. Probeer het later opnieuw.',
+				});
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		getLessen();
+		setInterval(getLessen, 30000); // Haal de lessen elke 30 seconden opnieuw op
+	});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

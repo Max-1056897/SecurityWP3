@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, session
 from flask import Flask, render_template, request, redirect, url_for, session
-
 import sqlite3
+import os
+from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
 app.secret_key = "Hogeschool Rotterdam" 
+
 
 @app.route("/")
 def index():
@@ -118,6 +120,7 @@ def docent_lessen_toevoegen_post():
     c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id))
     conn.commit()
     conn.close()
+    update_json_from_database()
     return redirect(url_for('docent_lessen_overzicht'))
 
 @app.route('/docent/lessen/overzicht')
@@ -154,6 +157,21 @@ def docent_alle_lessen():
     result = c.fetchall()
     conn.close()
     return render_template('docent_overzicht_lessen.html', lessen=result)
+
+# Definieer de route voor het lesrooster
+@app.route("/docent/lessen.json")
+def lessen():
+    # Het lesroosterbestand bevindt zich in de 'static' map
+    json_path = os.path.join('lessen.json')
+
+    # Lees de inhoud van het bestand
+    with open(json_path, 'r') as json_file:
+        json_data = json_file.read()
+
+    # Geef de inhoud van het bestand terug als JSON
+    return jsonify(json_data)
+
+
 
 
 if __name__ == "__main__":
