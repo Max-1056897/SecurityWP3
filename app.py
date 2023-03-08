@@ -90,20 +90,6 @@ def les_overzicht(id):
     conn.close()
     return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
 
-@app.route('/toevoegen_les', methods=['POST'])
-def toevoegen_les():
-    vak = request.form['vak']
-    datum = request.form['datum']
-    starttijd = request.form['starttijd']
-    eindtijd = request.form['eindtijd']
-    docent_id = request.form['docent']
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('docent_dashboard'))
-
 @app.route('/les/<int:id>')
 def les(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -142,16 +128,29 @@ def docent_lessen_overzicht():
     c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
     result = c.fetchall()
     conn.close()
-    return render_template('docent_lessen_overzicht.html', lessen=result)
+    return render_template('docent_lessen.html', lessen=result)
 
+@app.route('/add_les', methods=['POST'])
+def add_les():  
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    vak = request.form['vak']
+    datum = request.form['datum']
+    starttijd = request.form['starttijd']
+    eindtijd = request.form['eindtijd']
+    docent_id = request.form['docent_id'] 
+    c.execute('INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)',
+    (vak, datum, starttijd, eindtijd, docent_id))
+    conn.commit()
+    conn.close()     
+    return redirect('/docent/lessen')
 
 ## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
 @app.route('/docent/lessen')
 def docent_alle_lessen():
-    docent_id = 1  
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+    c.execute("SELECT * FROM lessen")
     result = c.fetchall()
     conn.close()
     return render_template('docent_overzicht_lessen.html', lessen=result)
