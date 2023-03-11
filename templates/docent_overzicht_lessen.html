@@ -2,7 +2,10 @@
 <html>
 <head>
 	<title>Dashboard Docent - Alle lessen</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -27,80 +30,58 @@
 	&nbsp;
 	&nbsp;
 	<div class="container">
-		<h2><b>Alle lessen</b></h2>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Vak</th>
-					<th>Datum</th>
-					<th>Starttijd</th>
-					<th>Eindtijd</th>
-					<th>Docent</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody id="lessen-lijst">
-			</tbody>
-		</table>
-	</div>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.all.min.js"></script>
+        <h2><b>Alle lessen</b></h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Les ID</th>
+                    <th>Vak</th>
+                    <th>Datum</th>
+                    <th>Starttijd</th>
+                    <th>Eindtijd</th>
+                    <th>Docent</th>
+                </tr>
+            </thead>
+            <tbody id="table-container"></tbody>
+        </table>
+    </div>
 	<script>
-		function getLessen() {
-			$.ajax({
-				url: "lessen.json",
-				dataType: "json",
-				success: function(data) {
-					var lessenLijst = "";
-					$.each(data, function(key, value) {
-						lessenLijst += "<tr>";
-						lessenLijst += "<td>" + value.vak + "</td>";
-						lessenLijst += "<td>" + value.datum + "</td>";
-						lessenLijst += "<td>" + value.starttijd + "</td>";
-						lessenLijst += "<td>" + value.eindtijd + "</td>";
-						lessenLijst += "<td>" + value.docent + "</td>";
-						lessenLijst += "<td><button type='button' class='btn btn-info' data-toggle='modal' data-target='#myModal" + value.id + "'>Meer informatie</button></td>";
-						lessenLijst += "</tr>";
+		
+		$(document).ready(function() {
 
-						// modal
-						lessenLijst += "<div class='modal fade' id='myModal" + value.id + "' role='dialog'>";
-						lessenLijst += "<div class='modal-dialog'>";
-						lessenLijst += "<div class='modal-content'>";
-												lessenLijst += "<div class='modal-header'>";
-						lessenLijst += "<button type='button' class='close' data-dismiss='modal'>&times;</button>";
-						lessenLijst += "<h4 class='modal-title'>Lesinformatie</h4>";
-						lessenLijst += "</div>";
-						lessenLijst += "<div class='modal-body'>";
-						lessenLijst += "<p>Vak: " + value.vak + "</p>";
-						lessenLijst += "<p>Datum: " + value.datum + "</p>";
-						lessenLijst += "<p>Starttijd: " + value.starttijd + "</p>";
-						lessenLijst += "<p>Eindtijd: " + value.eindtijd + "</p>";
-						lessenLijst += "<p>Docent: " + value.docent + "</p>";
-						lessenLijst += "</div>";
-						lessenLijst += "<div class='modal-footer'>";
-						lessenLijst += "<button type='button' class='btn btn-default' data-dismiss='modal'>Sluiten</button>";
-						lessenLijst += "</div>";
-					lessenLijst += "</div>";
-					lessenLijst += "</div>";
-					lessenLijst += "</div>";
-				});
-				$("#lessen-lijst").html(lessenLijst);
-			},
-			error: function() {
-				Swal.fire({
-					icon: 'error',
-					title: 'Oops...',
-					text: 'Er is een fout opgetreden bij het ophalen van de lessen. Probeer het later opnieuw.',
-				});
-			}
-		});
-	}
+    function refreshTable() {
+        $.ajax({
+            url: "http://localhost:5000/API/lessen",
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                var table = ""; 
+                for (var i = 0; i < data.length; i++) {
+                
+                    var vak = data[i].vak;
+                    var datum = data[i].datum;
+                    var starttijd = data[i].starttijd;
+                    var eindtijd = data[i].eindtijd;
+                    var docent_id = data[i].docent_id;
+                  
+                    table += "<tr><td>" + vak + "</td><td>" + datum + "</td><td>" + starttijd + "</td><td>" + eindtijd + "</td><td>" + docent_id + "</td></tr>";
+                }
+                $("#table-container").html(table); 
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
+    }
+    
+    // Voer refreshTable functie elke seconde uit
+    setInterval(refreshTable, 1000);
+});
 
-	$(document).ready(function() {
-		getLessen();
-		setInterval(getLessen, 30000); // Haal de lessen elke 30 seconden opnieuw op
-	});
-</script>
+
+
+		</script>
+		
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
