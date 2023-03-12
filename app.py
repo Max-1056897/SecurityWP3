@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, session
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
-
+import random
 
 app = Flask(__name__)
 app.secret_key = "Hogeschool Rotterdam" 
@@ -76,14 +76,26 @@ def aanwezigheid():
     conn.close()
     return 'Aanwezigheid opgeslagen!'
 
-@app.route('/docent_dashboard')
+@app.route('/docent_dashboard', methods=['GET', 'POST'])
 def docent_dashboard():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
+
+    if request.method == 'POST':
+        les_id = request.form['les_id']
+        aanwezigheid = request.form['aanwezigheid']
+
+        c.execute("UPDATE lessen SET aanwezigheid=? WHERE id=?", (aanwezigheid, les_id))
+        conn.commit()
+
+        flash('Aanwezigheidsstatus bijgewerkt!')
+
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
+
     conn.close()
     return render_template('docent_dashboard.html', lessen=lessen)
+
 
 @app.route('/les/<int:id>')
 def les_overzicht(id):
@@ -197,6 +209,36 @@ def export_lessen():
     for row in rows:
         result.append(dict(row))
     return jsonify(result)
+
+
+
+
+
+@app.route('/docent/lessen/code', methods=['GET', 'POST'])
+def docent_lessen_code():
+    if request.method == 'POST':
+        vak = request.form['vak']
+        code = random.randint(1000, 9999)
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
+        conn.commit()
+        c.execute("SELECT code FROM lessen WHERE vak=?", (vak,))
+        row = c.fetchone()
+        conn.close()
+        code = row[0] if row else None
+        return redirect(url_for('docent_lessen_code', code=code))
+
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT vak FROM lessen")
+    vakken = c.fetchall()
+    conn.close()
+
+    code = request.args.get('code')
+
+    return render_template('docent_lessen_code.html', vakken=vakken, code=code)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
