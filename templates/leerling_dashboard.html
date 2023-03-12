@@ -1,89 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Leerling Dashboard</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/leerling_dashboard.css">
-  </head>
-  <body>
-    <div class="container">
-      <h1>Leerling Dashboard</h1>
-      <h2>Mijn lessen</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Vak</th>
-            <th>Datum</th>
-            <th>Starttijd</th>
-            <th>Eindtijd</th>
-            <th>Aanwezigheid</th>
-            <th>Reden afwezigheid</th>
-            <th>Code</th>
-            <th class="more-info"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for les in lessen %}
-          <tr>
-            <td>{{ les.vak }}</td>
-            <td>{{ les.datum }}</td>
-            <td>{{ les.starttijd }}</td>
-            <td>{{ les.eindtijd }}</td>
-            <td>
-              <select class="form-control" name="aanwezigheid">
-                <option value="1">Aanwezig</option>
-                <option value="0">Afwezig</option>
-              </select>
-            </td>
-            <td>
-              <input type="text" class="form-control" name="reden_afwezigheid">
-            </td>
-            <td>
-              <input type="text" class="form-control" name="code">
-            </td>
-            <td class="more-info">
-              <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#les{{les.id}}-modal">Meer informatie</button>
-              <div class="modal fade" id="les{{les.id}}-modal" tabindex="-1" role="dialog" aria-labelledby="les{{les.id}}-modal-label" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="les{{les.id}}-modal-label">{{les.vak}} - {{les.datum}}</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <p><strong>Leraar:</strong> {{les.leraar}}</p>
-                      <p><strong>Lokaal:</strong> {{les.lokaal}}</p>
-                      <p><strong>Beschrijving:</strong> {{les.beschrijving}}</p>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluiten</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <button class="btn btn-primary" id="submit">Opslaan</button>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        $("#submit").click(function() {
-          var aanwezigheid = $("select[name='aanwezigheid']").map(function(){return $(this).val();}).get();
-          var reden_afwezigheid = $("input[name='reden_afwezigheid']").map(function(){return $(this).val();}).get();
-          var code = $("input[name='code']").map(function(){return $(this).val();}).get();
-          $.post("/aanwezigheid", {"aanwezigheid": aanwezigheid, "reden_afwezigheid": reden_afwezigheid, "code": code}, function(data) {
-            alert(data);
-          });
-        });
-      });
-    </script>
-  </body>
+<head>
+	<title>Aanwezigheidssysteem</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Aanwezigheidssysteem</h2>
+		{% for row in lessen %}
+		<form method="post" action="{{ url_for('docent_dashboard') }}">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Les ID</th>
+						<th>Vak</th>
+						<th>Datum</th>
+						<th>Starttijd</th>
+						<th>Eindtijd</th>
+						<th>Code</th>
+						<th>Reden</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{ row[0] }}</td>
+						<td>{{ row[1] }}</td>
+						<td>{{ row[2] }}</td>
+						<td>{{ row[3] }}</td>
+						<td>{{ row[4] }}</td>
+						<td><input type="text" name="code" class="form-control" required></td>
+						<td><input type="text" name="reden" class="form-control"></td>
+						<input type="hidden" name="les_id" value="{{ row[0] }}">
+					</tr>
+				</tbody>
+			</table>
+			<button type="submit" class="btn btn-primary">Versturen</button>
+		</form>
+		{% endfor %}
+	</div>
+</body>
 </html>
