@@ -6,6 +6,11 @@ from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 import random
 
+LISTEN_ALL = "0.0.0.0"
+FLASK_IP = LISTEN_ALL
+FLASK_PORT = 81
+FLASK_DEBUG = True
+
 app = Flask(__name__)
 app.secret_key = "Hogeschool Rotterdam" 
 CORS(app)
@@ -151,7 +156,7 @@ def docent_lessen_toevoegen_post():
     conn.close()
     return redirect(url_for('docent_lessen_overzicht'))
 
-@app.route('/docent/lessen/overzicht')
+@app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
 def docent_lessen_overzicht():
     docent_id = 1 
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -177,7 +182,7 @@ def add_les():
     return redirect('/docent/lessen')
 
 ## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
-@app.route('/docent/lessen')
+@app.route('/docent/lessen', methods=["GET","POST"])
 def docent_alle_lessen():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
@@ -186,7 +191,7 @@ def docent_alle_lessen():
     conn.close()
     return render_template('docent_overzicht_lessen.html', lessen=result)
 
-@app.route("/docent/lessen.json")
+@app.route("/docent/lessen.json", methods=["GET", "POST"])
 def lessen():
 
     json_path = os.path.join('lessen.json')
@@ -213,7 +218,7 @@ def export_leerlingen():
         result.append(dict(row))
     return jsonify(result)
 
-@app.route('/API/lessen')
+@app.route('/API/lessen', methods=["GET", "POST"])
 def export_lessen():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
@@ -268,4 +273,4 @@ def docent_lessen_code():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host=FLASK_IP, port=FLASK_PORT, debug=FLASK_DEBUG)
