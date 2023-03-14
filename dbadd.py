@@ -4,6 +4,7 @@ conn = sqlite3.connect('aanwezigheidssysteem.db')
 
 c = conn.cursor()
 
+
 c.execute('''CREATE TABLE IF NOT EXISTS leerlingen
              (leerling_id INTEGER PRIMARY KEY AUTOINCREMENT,
               naam TEXT NOT NULL,
@@ -36,6 +37,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS aanwezigheid
               FOREIGN KEY (leerling_id) REFERENCES leerlingen(leerling_id),
               FOREIGN KEY (les_id) REFERENCES lessen(les_id))''')
 
+
+
 conn.commit()
 
 # # Toevoegen van leerling naam en id aan aanwezigheid tabel
@@ -63,12 +66,12 @@ c = conn.cursor()
 # c.execute("INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES ('David', 'david', 'david', 'Klas 1A')")
 # c.execute("INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES ('Max', 'max', 'max', 'Klas 2B')")
 
-# # Voeg de docenten toe
-# c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Docent 1', 'admin', 'admin')")
-# c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Docent 2', 'admin', 'admin')")
+# Voeg de docenten toe
+c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Docent 1', 'admin', 'admin')")
+c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Docent 2', 'admin', 'admin')")
 
-# # Voeg de admin-account toe
-# c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Admin', 'admin', 'admin')")
+# Voeg de admin-account toe
+c.execute("INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES ('Admin', 'admin', 'admin')")
 
 # conn.commit()
 # conn.close()
