@@ -15,53 +15,42 @@
             <th>Reden</th>
           </tr>
         </thead>
-        <tbody id="aanwezigheden-lijst">
-          {% for aanwezigheid in aanwezigheden %}
-            <tr>
-              <td>{{ aanwezigheid[0] }}</td>
-              {% if aanwezigheid[1] == 1 %}
-                <td>Ja</td>
-              {% else %}
-                <td>Nee</td>
-              {% endif %}
-              <td>{{ aanwezigheid[2] }}</td>
-            </tr>
-          {% endfor %}
+        <tbody id="table-body">
         </tbody>
       </table>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
     <script>
-      $(document).ready(function() {
-        function updateAanwezigheden() {
-          $.ajax({
-            url: "/api/aanwezigheden/{{ les_id }}",
-            method: "GET",
-            dataType: "json",
-            success: function(response) {
-              var aanwezigheden = response.aanwezigheden;
-              var html = "";
-              for (var i = 0; i < aanwezigheden.length; i++) {
-                html += "<tr>";
-                html += "<td>" + aanwezigheden[i][0] + "</td>";
-                if (aanwezigheden[i][1] == 1) {
-                  html += "<td>Ja</td>";
-                } else {
-                  html += "<td>Nee</td>";
-                }
-                html += "<td>" + aanwezigheden[i][2] + "</td>";
-                html += "</tr>";
-              }
-              $("#aanwezigheden-lijst").html(html);
-            },
-            error: function() {
-              alert("Er is iets fout gegaan bij het ophalen van de aanwezigheden.");
+      // Configure jQuery to run in noConflict mode
+      jQuery.noConflict();
+
+      // Define a function to refresh the data
+      function refreshData() {  
+        jQuery.get("/API/aanwezigheid?les_id={{ les_id }}", function(data) {
+          var tableBody = jQuery("#table-body");
+          tableBody.empty(); // Clear the table before adding new data
+          jQuery.each(data, function(index, aanwezigheid) {
+            var row = jQuery("<tr></tr>");
+            var naamColumn = jQuery("<td></td>").text(aanwezigheid.naam);
+            var aanwezigColumn = jQuery("<td></td>");
+            if (aanwezigheid.aanwezig == 1) {
+              aanwezigColumn.text("Ja");
+            } else {
+              aanwezigColumn.text("Nee");
             }
+            var redenColumn = jQuery("<td></td>").text(aanwezigheid.reden);
+            row.append(naamColumn).append(aanwezigColumn).append(redenColumn);
+            tableBody.append(row);
           });
-        }
-        setInterval(updateAanwezigheden, 1000);
+        });
+      }
+
+      // Use setInterval to periodically refresh the data
+      jQuery(document).ready(function() {
+        refreshData(); // Call once on page load
+        setInterval(refreshData, 1000); // Call every 5 seconds
       });
     </script>
   </body>
