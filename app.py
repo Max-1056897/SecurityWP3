@@ -77,11 +77,13 @@ def leerling_dashboard():
         else:
             # Student aanwezigheid in de database opslaan
             leerling_id = session.get('leerling_id')
-            c.execute("INSERT INTO aanwezigheid (aanwezigheid_id, leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?, ?)", (None, leerling_id, vak[0], True, ''))
+            les_id = vak[0] # haal de les_id op uit de database
+            c.execute("INSERT INTO aanwezigheid (aanwezigheid_id, leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?, ?)", (None, leerling_id, les_id, True, ''))
             conn.commit()
             return redirect('/leerling_dashboard')
     conn.close()
     return render_template('leerling_dashboard.html', lessen=lessen)
+
 
 @app.route('/aanwezigheid', methods=['POST'])
 def aanwezigheid():
@@ -116,24 +118,38 @@ def docent_dashboard():
     conn.close()
     return render_template('docent_dashboard.html', lessen=lessen)
 
-
 @app.route('/les/<int:id>')
 def les_overzicht(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
-    c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE les_id=?", (id,))
-    aanwezigheden = c.fetchall()
-    conn.close()
-    return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
 
-@app.route('/les/<int:id>')
-def les(id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE les_id=?", (id,))
-    aanwezigheden = c.fetchall()
-    conn.close()
-    return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
+    # Haal de lesgegevens op
+    c.execute("SELECT * FROM lessen WHERE les_id=?", (id,))
+    les = c.fetchone()
+
+    if les:
+        # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
+        c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
+        aanwezigheden = c.fetchall()
+        conn.close()
+
+        # Render de template met de aanwezigheidsgegevens en de lesgegevens
+        return render_template('les.html', aanwezigheden=aanwezigheden, les=les)
+    else:
+        # De les is niet gevonden, geef een foutmelding
+        conn.close()
+        return "Les niet gevonden"
+
+
+
+# @app.route('/les/<int:id>')
+# def les(id):
+#     conn = sqlite3.connect('aanwezigheidssysteem.db')
+#     c = conn.cursor()
+#     c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE les_id=?", (id,))
+#     aanwezigheden = c.fetchall()
+#     conn.close()
+#     return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
 
 
 
@@ -235,12 +251,13 @@ def export_aanwezigheid():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute("SELECT * FROM aanwezigheid")
+    cur.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id")
     rows = cur.fetchall()
     result = []
     for row in rows:
         result.append(dict(row))
     return jsonify(result)
+
 
 
 
