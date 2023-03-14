@@ -15,7 +15,7 @@
             <th>Reden</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="aanwezigheden-lijst">
           {% for aanwezigheid in aanwezigheden %}
             <tr>
               <td>{{ aanwezigheid[0] }}</td>
@@ -33,5 +33,36 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        function updateAanwezigheden() {
+          $.ajax({
+            url: "/api/aanwezigheden/{{ les_id }}",
+            method: "GET",
+            dataType: "json",
+            success: function(response) {
+              var aanwezigheden = response.aanwezigheden;
+              var html = "";
+              for (var i = 0; i < aanwezigheden.length; i++) {
+                html += "<tr>";
+                html += "<td>" + aanwezigheden[i][0] + "</td>";
+                if (aanwezigheden[i][1] == 1) {
+                  html += "<td>Ja</td>";
+                } else {
+                  html += "<td>Nee</td>";
+                }
+                html += "<td>" + aanwezigheden[i][2] + "</td>";
+                html += "</tr>";
+              }
+              $("#aanwezigheden-lijst").html(html);
+            },
+            error: function() {
+              alert("Er is iets fout gegaan bij het ophalen van de aanwezigheden.");
+            }
+          });
+        }
+        setInterval(updateAanwezigheden, 1000);
+      });
+    </script>
   </body>
 </html>

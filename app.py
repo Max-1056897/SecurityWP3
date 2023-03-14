@@ -226,7 +226,7 @@ def export_lessen():
     return jsonify(result)
 
 @app.route('/API/aanwezigheid')
-def export_lessen():
+def export_aanwezigheid():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
