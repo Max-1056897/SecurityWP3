@@ -54,12 +54,27 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
     
-@app.route('/leerling_dashboard')
+@app.route('/leerling_dashboard', methods=["POST", "GET"])
 def leerling_dashboard():
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('SELECT * FROM lessen')
     lessen = c.fetchall()
+    if request.method == 'POST':
+        # Invoer van de student ophalen uit het formulier
+        code = request.form['code']
+
+        # Controleren of de code overeenkomt met de code in de database
+        c.execute("SELECT * FROM lessen WHERE code=?", (code,))
+        vak = c.fetchone()
+        if vak is None:
+            print('Nee')
+        else:
+            # Student aanwezigheid in de database opslaan
+            leerling_id = session.get('leerling_id')
+            c.execute("INSERT INTO aanwezigheid (aanwezigheid_id, leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?, ?)", (None, leerling_id, vak[0], True, ''))
+            conn.commit()
+            return redirect('/leerling_dashboard')
     conn.close()
     return render_template('leerling_dashboard.html', lessen=lessen)
 
@@ -204,6 +219,18 @@ def export_lessen():
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur.execute("SELECT * FROM lessen")
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        result.append(dict(row))
+    return jsonify(result)
+
+@app.route('/API/aanwezigheid')
+def export_lessen():
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM aanwezigheid")
     rows = cur.fetchall()
     result = []
     for row in rows:
