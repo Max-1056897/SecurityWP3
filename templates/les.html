@@ -6,7 +6,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Aanwezigheid voor les {{ les.les_id }}</h1>
+      <h1>Aanwezigheid voor les {{ les[0] }}</h1>
       <table class="table">
         <thead>
           <tr>
@@ -50,7 +50,7 @@
       // Use setInterval to periodically refresh the data
       jQuery(document).ready(function() {
         refreshData(); // Call once on page load
-        setInterval(refreshData, 5000); // Call every 5 seconds
+        setInterval(refreshData, 1000); // Call every 5 seconds
       });
     </script>
   </body>

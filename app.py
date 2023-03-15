@@ -249,18 +249,6 @@ def export_lessen():
         result.append(dict(row))
     return jsonify(result)
 
-# @app.route('/API/aanwezigheid')
-# def export_aanwezigheid():
-#     conn = sqlite3.connect('aanwezigheidssysteem.db')
-#     conn.row_factory = sqlite3.Row
-#     cur = conn.cursor()
-#     cur.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id")
-#     rows = cur.fetchall()
-#     result = []
-#     for row in rows:
-#         result.append(dict(row))
-#     return jsonify(result)
-
 @app.route('/API/les/<int:id>')
 def les_overzicht_api(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
