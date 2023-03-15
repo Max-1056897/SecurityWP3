@@ -59,6 +59,8 @@ conn.commit()
 
 import sqlite3
 
+
+
 conn = sqlite3.connect('aanwezigheidssysteem.db')
 c = conn.cursor()
 
@@ -84,6 +86,7 @@ INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id
 
 c.execute(query)
 result = c.fetchall()
+
 print(result)
 
 
