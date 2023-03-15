@@ -34,11 +34,12 @@
           jQuery.each(data.aanwezigheid_naam, function(index, naam) {
             var row = jQuery("<tr></tr>");
             var naamColumn = jQuery("<td></td>").text(naam);
-            var aanwezigColumn = jQuery("<td></td>");
+            var aanwezigheidsBolletje = jQuery("<span></span>").addClass("badge badge-success").text("Aanwezig");
+            var afwezigheidsBolletje = jQuery("<span></span>").addClass("badge badge-danger").text("Afwezig");
             if (data.aanwezigheid_aanwezig[index] == 1) {
-              aanwezigColumn.text("Ja");
+              var aanwezigColumn = jQuery("<td></td>").append(aanwezigheidsBolletje);
             } else {
-              aanwezigColumn.text("Nee");
+              var aanwezigColumn = jQuery("<td></td>").append(afwezigheidsBolletje);
             }
             var redenColumn = jQuery("<td></td>").text("");
             row.append(naamColumn).append(aanwezigColumn).append(redenColumn);
