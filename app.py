@@ -123,21 +123,21 @@ def les_overzicht(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
 
+    c.execute("SELECT vak FROM lessen WHERE les_id=?", (id,))
+    vak = c.fetchone()
+
     # Haal de lesgegevens op
     c.execute("SELECT * FROM lessen WHERE les_id=?", (id,))
     les = c.fetchone()
-    print(les[0])
 
     if les:
         # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
         c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
         aanwezigheden = c.fetchall()
-        print(id)
-        print(aanwezigheden)
         conn.close()
 
         # Render de template met de aanwezigheidsgegevens en de lesgegevens
-        return render_template('les.html', aanwezigheden=aanwezigheden, les=les)
+        return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak)
     else:
         # De les is niet gevonden, geef een foutmelding
         conn.close()
@@ -262,12 +262,9 @@ def les_overzicht_api(id):
         # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
         c.execute("SELECT leerlingen.naam FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
         aanwezigheid_naam = c.fetchall()
-        print(aanwezigheid_naam)
         c.execute("SELECT aanwezigheid.aanwezig FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
         aanwezigheid_aanwezig = c.fetchall()
-        print(aanwezigheid_aanwezig)
         conn.close()
-
         # Geef een JSON-response met de aanwezigheidsgegevens en de lesgegevens
         return jsonify(aanwezigheid_naam=aanwezigheid_naam,aanwezigheid_aanwezig=aanwezigheid_aanwezig, les=les)
     else:
