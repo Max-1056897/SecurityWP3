@@ -54,26 +54,34 @@
       </table>
     </div>
     <div class="container">
-      <h2>Les details</h2>
+      <h2>Leerling details</h2>
       <table class="table">
         <thead>
           <tr>
             <th>Leerling</th>
             <th>Aanwezigheid</th>
-            <th>Reden afwezig</th>
+            <th>Vak</th>
           </tr>
         </thead>
         <tbody>
-          {% for aanwezigheid in aanwezigheden %}
+          {% for row in rows %}
             <tr>
-              <td>{{ aanwezigheid[1] }}</td>
-              <td>{{ aanwezigheid[3] }}</td>
-              <td>{{ aanwezigheid[4] }}</td>
+              <td>{{ row[0] }}</td>
+              <td>
+                {% if row[1] == 1 %}
+                  <button class="btn btn-success">Aanwezig</button>
+                {% else %}
+                  <button class="btn btn-danger">Afwezig</button>
+                {% endif %}
+              </td>
+              <td>{{ row[2] }}</td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    
+    
     <font color="white"><h1>.</h1></font>
     <font color="white"><h1>.</h1></font>
     <font color="white"><h1>.</h1></font>
