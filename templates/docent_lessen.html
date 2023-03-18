@@ -54,8 +54,17 @@
 				<label for="docent_id">Docent ID:</label>
 				<input type="text" class="form-control" id="docent_id" name="docent_id" required>
 			</div>
+			<div class="form-group">
+				<label for="klas_id">Klas:</label>
+				<select class="form-control" id="klas_id" name="klas_id" required>
+					{% for klas in klassen %}
+					<option value="{{ klas[0] }}">{{ klas[1] }}</option>
+					{% endfor %}
+				</select>
+			</div>	
 			<button type="submit" class="btn btn-primary">Toevoegen</button>
 		</form>
+		
 	</div>
 </body>
 </html>
