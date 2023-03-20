@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Code generator voor vak</title>
     <!-- Voeg de Bootstrap CSS toe -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  </head>
-  <body>
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Docent Dashboard</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,47 +26,84 @@
             <li class="nav-item">
               <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">GRID PANEEL</a>
+            </li>
           </ul>
         </div>  
       </nav>
+
     <div class="container my-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header bg-dark text-white">
-              <h1 class="text-center">Code generator voor vak</h1>
-            </div>
-            <div class="card-body">
-              <form method="post" action="{{ url_for('docent_lessen_code') }}">
-                <div class="form-group">
-                  <label for="vak">Kies een vak:</label>
-                  <select id="vak" name="vak" class="form-control">
-                    {% for vak in vakken %}
-                    <option value="{{ vak[0] }}">{{ vak[0] }}</option>
-                    {% endfor %}
-                  </select>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h1 class="text-center">Code generator voor vak</h1>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ url_for('docent_lessen_code') }}">
+                            <div class="form-group">
+                                <label for="vak">Kies een vak:</label>
+                                <select id="vak" name="vak" class="form-control">
+                                    {% for vak in vakken %}
+                                    <option value="{{ vak[0] }}">{{ vak[0] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-dark btn-block">Geneer code</button>
+                        </form>
+                        {% if code %}
+                        <div class="mt-4">
+                            <h4>Code:</h4>
+                            <div class="input-group">
+                                <input type="text" class="form-control" value="{{ code }}" readonly>
+                                <div class="input-group-append">
+                                    <button class="btn btn-dark" type="button" id="copy-code-btn">Kopieer</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-dark btn-block">Generate</button>
-              </form>
-              {% if code %}
-              <div class="mt-4">
-                <h4>Code:</h4>
-                <h2 class="text-center">{{ code }}</h2>
-              </div>
-              {% endif %}
             </div>
-          </div>
         </div>
-      </div>
     </div>
 
-<!-- Voeg de Bootstrap JavaScript toe -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
-  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
-  crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
-  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNSqn4D" 
-  crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
-  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
-  crossorigin="anonymous"></script>
+    <!-- Voeg de Bootstrap JavaScript toe -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+    crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNSqn4D" 
+    crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" 
+    crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            $('#copy-code-btn').click(function() {
+                // Maak een nieuw input element aan om de code in te stoppen
+                var codeInput = $('<input>').val('{{ code }}');
+                // Voeg het input element toe aan de body
+                $('body').append(codeInput);
+                // Selecteer de inhoud van het input element
+                codeInput.select();
+                // Kopieer de geselecteerde inhoud naar het klembord
+                document.execCommand("copy");
+                // Verwijder het input element weer uit het DOM
+                codeInput.remove();
+                // Verander de tekst van de kopieer code knop naar "Gekopieerd!"
+                $('#copy-code-btn').text('Gekopieerd!');
+                // Schakel de kopieer code knop uit om te voorkomen dat gebruikers meerdere keren klikken
+                $('#copy-code-btn').prop('disabled', true);
+                // Wacht 3 seconden en schakel de kopieer code knop weer in
+                setTimeout(function() {
+                    $('#copy-code-btn').text('Kopieer');
+                    $('#copy-code-btn').prop('disabled', false);
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>

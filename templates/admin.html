@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Docent Dashboard</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/docent_dashboard">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen">Lessen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">GRID PANEEL</a>
+          </li>
+        </ul>
+      </div>  
+    </nav>
+    <div class="container mt-5">
+      <h2>Leerlingen</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Naam</th>
+            <th>Gebruikersnaam</th>
+            <th>Wachtwoord</th>
+            <th>Rooster</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %}
+          <tr>
+            <td>{{ student[0] }}</td>
+            <td>{{ student[1] }}</td>
+            <td>{{ student[2] }}</td>
+            <td>{{ student[3] }}</td>
+            <td>{{ student[4] }}</td>
+            <td><button class="btn btn-primary edit-button">Edit</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h2 class="mt-5">Docenten</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Naam</th>
+            <th>Gebruikersnaam</th>
+            <th>Wachtwoord</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for teacher in teachers %}
+          <tr>
+            <td>{{ teacher[0] }}</td>
+            <td>{{ teacher[1] }}</td>
+            <td>{{ teacher[2] }}</td>
+            <td>{{ teacher[3] }}</td>
+            <td><button class="btn btn-primary edit-button">Edit</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>      
+    <script>
+        $(document).ready(function() {
+          // Wanneer de edit-knop wordt geklikt
+          $('.edit-button').click(function() {
+            // Zoek de rij van de knop
+            var row = $(this).closest('tr');
+            // Maak een container om de bewerkingsvelden te bevatten
+            var container = $('<div></div>');
+            // Voeg velden toe voor elke kolom
+            row.find('td').each(function() {
+              var columnName = $(this).prevAll('th').text();
+              var columnValue = $(this).text();
+              var input = $('<input type="text" class="form-control mb-2 mr-sm-2" value="' + columnValue + '">');
+              input.attr('name', columnName.toLowerCase().replace(' ', '_'));
+              container.append(input);
+            });
+            // Voeg een opslaan-knop toe om de bewerkingen op te slaan
+            var saveButton = $('<button type="button" class="btn btn-primary save-button">Save</button>');
+            container.append(saveButton);
+            // Vervang de rij door de container
+            row.replaceWith($('<tr></tr>').append($('<td colspan="6"></td>').append(container)));
+          });
+      
+          // Wanneer de opslaan-knop wordt geklikt voor de studenten
+          $('.container').on('click', '.save-button', function() {
+            // Zoek de container van de opslaan-knop
+            var container = $(this).closest('.container');
+            // Zoek de rij van de opslaan-knop
+            var row = $(this).closest('tr');
+            // Bouw de gegevens op uit de ingevoerde waarden
+            var data = {};
+            $(this).closest('div').find('input').each(function() {
+              var name = $(this).attr('name');
+              var value = $(this).val();
+              data[name] = value;
+            });
+            // Voer een AJAX-verzoek uit om de gegevens bij te werken
+            $.ajax({
+              type: 'POST',
+              url: '/update_student',
+              data: data,
+              success: function(response) {
+                // Vervang de bewerkingscontainer door de bijgewerkte rij
+                row.replaceWith(response);
+              }
+            });
+          });
+      
+          // Wanneer de opslaan-knop wordt geklikt voor de docenten
+          $('.container').on('click', '.save-teacher-button', function() {
+            // Zoek de container van de opslaan-knop
+            var container = $(this).closest('.container');
+            // Zoek de rij van de opslaan-knop
+            var row = $(this).closest('tr');
+            // Bouw de gegevens op uit de ingevoerde waarden
+            var data = {};
+            $(this).closest('div').find('input').each(function() {
+              var name = $(this).attr('name');
+              var value = $(this).val();
+              data[name] = value;
+            });
+            // Voer een AJAX-verzoek uit om de gegevens bij te werken
+            $.ajax({
+              type: 'POST',
+              url: '/update_teacher',
+              data: data,
+              success: function(response) {
+                // Vervang de bewerkingscontainer door de bijgewerkte rij
+                row.replaceWith(response);
+              }
+            });
+          });
+        });
+      </script>  
+</body>
+</html>
