@@ -114,9 +114,14 @@ def docent_dashboard():
 
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
-
+    
+    # Ophalen van de aanwezigheidsgegevens van leerlingen, inclusief de docentnaam
+    c.execute('SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id')
+    rows = c.fetchall()
     conn.close()
-    return render_template('docent_dashboard.html', lessen=lessen)
+
+    return render_template('docent_dashboard.html', lessen=lessen, rows=rows)
+
 
 @app.route('/les/<int:id>')
 def les_overzicht(id):
@@ -156,24 +161,29 @@ def les_overzicht(id):
 
 
 
-## DIT IS ALLEMAAL VOOR DE TOEVOEGEN LES PAGINA
-@app.route('/docent/lessen/toevoegen')
+@app.route('/docent/lessen/toevoegen', methods=['GET'])
 def docent_lessen_toevoegen():
-    return render_template('docent_lessen.html')
+	conn = sqlite3.connect('aanwezigheidssysteem.db')
+	c = conn.cursor()
+	klassen = c.execute("SELECT klas_id, lesnaam FROM klassen").fetchall()
+	conn.close()
+	return render_template('docent_lessen.html', klassen=klassen)
 
 @app.route('/docent/lessen/toevoegen', methods=['POST'])
 def docent_lessen_toevoegen_post():
-    vak = request.form['vak']
-    datum = request.form['datum']
-    starttijd = request.form['starttijd']
-    eindtijd = request.form['eindtijd']
-    docent_id = request.form['docent_id']
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('docent_lessen_overzicht'))
+	vak = request.form['vak']
+	datum = request.form['datum']
+	starttijd = request.form['starttijd']
+	eindtijd = request.form['eindtijd']
+	docent_id = request.form['docent_id']
+	klas_id = request.form['klas_id']
+	conn = sqlite3.connect('aanwezigheidssysteem.db')
+	c = conn.cursor()
+	c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id, code) VALUES (?, ?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id, klas_id))
+	conn.commit()
+	conn.close()
+	return redirect(url_for('docent_lessen_overzicht'))
+
 
 @app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
 def docent_lessen_overzicht():

@@ -61,6 +61,7 @@
             <th>Leerling</th>
             <th>Aanwezigheid</th>
             <th>Vak</th>
+            <th>Docent</th>
           </tr>
         </thead>
         <tbody>
@@ -75,9 +76,16 @@
                 {% endif %}
               </td>
               <td>{{ row[2] }}</td>
+              <td>
+                {% for les in lessen %}
+                  {% if les[0] == row[3] %}
+                    {{ les[5] }}
+                  {% endif %}
+                {% endfor %}
+              </td>
             </tr>
           {% endfor %}
-        </tbody>
+        </tbody>        
       </table>
     </div>
     
