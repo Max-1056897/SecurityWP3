@@ -191,4 +191,33 @@ conn.commit()
 # conn.commit()
 # conn.close()
 
+# import sqlite3
+
+# conn = sqlite3.connect('aanwezigheidssysteem.db')
+# c = conn.cursor()
+
+# c.execute('''CREATE TABLE IF NOT EXISTS admin
+#              (id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               gebruikersnaam TEXT NOT NULL,
+#               wachtwoord TEXT NOT NULL)''')
+
+# conn.commit()
+# conn.close()
+
+
+import sqlite3
+
+conn = sqlite3.connect('aanwezigheidssysteem.db')
+c = conn.cursor()
+
+# Voeg admin account toe
+c.execute("INSERT INTO admin (gebruikersnaam, wachtwoord) VALUES (?, ?)", ('admin', 'admin'))
+
+# Commit de veranderingen
+conn.commit()
+
+# Sluit de verbinding
+conn.close()
+
+
 

@@ -24,6 +24,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">GRID PANEEL</a>
+          </li>
         </ul>
       </div>  
     </nav>
@@ -64,30 +67,27 @@
             <th>Docent</th>
           </tr>
         </thead>
-        <tbody>
-          {% for row in rows %}
-            <tr>
-              <td>{{ row[0] }}</td>
-              <td>
-                {% if row[1] == 1 %}
-                  <button class="btn btn-success">Aanwezig</button>
-                {% else %}
-                  <button class="btn btn-danger">Afwezig</button>
-                {% endif %}
-              </td>
-              <td>{{ row[2] }}</td>
-              <td>
-                {% for les in lessen %}
-                  {% if les[0] == row[3] %}
-                    {{ les[5] }}
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row[0] }}</td>
+                <td>
+                  {% if row[1] == 1 %}
+                    <button class="btn btn-success">Aanwezig</button>
+                  {% else %}
+                    <button class="btn btn-danger">Afwezig</button>
                   {% endif %}
-                {% endfor %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>        
+                </td>
+                <td>{{ row[2] }}</td>
+                <td>{{ docent_dict[les_dict[row[3]]['docent_id']] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+       
       </table>
     </div>
+    
     
     
     <font color="white"><h1>.</h1></font>
