@@ -34,129 +34,111 @@
         </ul>
       </div>  
     </nav>
-    <div class="container mt-5">
-      <h2>Leerlingen</h2>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Naam</th>
-            <th>Gebruikersnaam</th>
-            <th>Wachtwoord</th>
-            <th>Rooster</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for student in students %}
-          <tr>
-            <td>{{ student[0] }}</td>
-            <td>{{ student[1] }}</td>
-            <td>{{ student[2] }}</td>
-            <td>{{ student[3] }}</td>
-            <td>{{ student[4] }}</td>
-            <td><button class="btn btn-primary edit-button">Edit</button></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <h2 class="mt-5">Docenten</h2>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Naam</th>
-            <th>Gebruikersnaam</th>
-            <th>Wachtwoord</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for teacher in teachers %}
-          <tr>
-            <td>{{ teacher[0] }}</td>
-            <td>{{ teacher[1] }}</td>
-            <td>{{ teacher[2] }}</td>
-            <td>{{ teacher[3] }}</td>
-            <td><button class="btn btn-primary edit-button">Edit</button></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>      
-    <script>
-        $(document).ready(function() {
-          // Wanneer de edit-knop wordt geklikt
-          $('.edit-button').click(function() {
-            // Zoek de rij van de knop
-            var row = $(this).closest('tr');
-            // Maak een container om de bewerkingsvelden te bevatten
-            var container = $('<div></div>');
-            // Voeg velden toe voor elke kolom
-            row.find('td').each(function() {
-              var columnName = $(this).prevAll('th').text();
-              var columnValue = $(this).text();
-              var input = $('<input type="text" class="form-control mb-2 mr-sm-2" value="' + columnValue + '">');
-              input.attr('name', columnName.toLowerCase().replace(' ', '_'));
-              container.append(input);
-            });
-            // Voeg een opslaan-knop toe om de bewerkingen op te slaan
-            var saveButton = $('<button type="button" class="btn btn-primary save-button">Save</button>');
-            container.append(saveButton);
-            // Vervang de rij door de container
-            row.replaceWith($('<tr></tr>').append($('<td colspan="6"></td>').append(container)));
-          });
-      
-          // Wanneer de opslaan-knop wordt geklikt voor de studenten
-          $('.container').on('click', '.save-button', function() {
-            // Zoek de container van de opslaan-knop
-            var container = $(this).closest('.container');
-            // Zoek de rij van de opslaan-knop
-            var row = $(this).closest('tr');
-            // Bouw de gegevens op uit de ingevoerde waarden
-            var data = {};
-            $(this).closest('div').find('input').each(function() {
-              var name = $(this).attr('name');
-              var value = $(this).val();
-              data[name] = value;
-            });
-            // Voer een AJAX-verzoek uit om de gegevens bij te werken
-            $.ajax({
-              type: 'POST',
-              url: '/update_student',
-              data: data,
-              success: function(response) {
-                // Vervang de bewerkingscontainer door de bijgewerkte rij
-                row.replaceWith(response);
-              }
-            });
-          });
-      
-          // Wanneer de opslaan-knop wordt geklikt voor de docenten
-          $('.container').on('click', '.save-teacher-button', function() {
-            // Zoek de container van de opslaan-knop
-            var container = $(this).closest('.container');
-            // Zoek de rij van de opslaan-knop
-            var row = $(this).closest('tr');
-            // Bouw de gegevens op uit de ingevoerde waarden
-            var data = {};
-            $(this).closest('div').find('input').each(function() {
-              var name = $(this).attr('name');
-              var value = $(this).val();
-              data[name] = value;
-            });
-            // Voer een AJAX-verzoek uit om de gegevens bij te werken
-            $.ajax({
-              type: 'POST',
-              url: '/update_teacher',
-              data: data,
-              success: function(response) {
-                // Vervang de bewerkingscontainer door de bijgewerkte rij
-                row.replaceWith(response);
-              }
-            });
-          });
-        });
-      </script>  
+    <body>
+      &nbsp;
+      <div class="container">
+        <h1>Leerlingen</h1>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Leerling ID</th>
+              <th>Naam</th>
+              <th>Gebruikersnaam</th>
+              <th>Wachtwoord</th>
+              <th>Rooster</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for leerling in leerlingen %}
+              <tr>
+                <td>{{ leerling[0] }}</td>
+                <td><input type="text" name="naam" value="{{ leerling[1] }}" class="form-control"></td>
+                <td><input type="text" name="gebruikersnaam" value="{{ leerling[2] }}" class="form-control"></td>
+                <td><input type="password" name="wachtwoord" value="{{ leerling[3] }}" class="form-control"></td>
+                <td><input type="text" name="rooster" value="{{ leerling[4] }}" class="form-control"></td>
+                <td><a href="/edit_leerling/{{ leerling[0] }}" class="btn btn-primary">Edit</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="container">
+        <h1>Docenten</h1>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Docent ID</th>
+              <th>Naam</th>
+              <th>Gebruikersnaam</th>
+              <th>Wachtwoord</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for docent in docenten %}
+              <tr>
+                <td>{{ docent[0] }}</td>
+                <td><input type="text" name="naam" value="{{ docent[1] }}" class="form-control"></td>
+                <td><input type="text" name="gebruikersnaam" value="{{ docent[2] }}" class="form-control"></td>
+                <td><input type="password" name="wachtwoord" value="{{ docent[3] }}" class="form-control"></td>
+                <td><a href="/edit_docent/{{ docent[0] }}" class="btn btn-primary">Edit</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="container">
+        <h1>Leerling Toevoegen</h1>
+        <form action="{{ url_for('add_leerling') }}" method="post">
+          <div class="form-group">
+            <label for="naam">Naam</label>
+            <input type="text" class="form-control" id="naam" name="naam" required>
+          </div>
+          <div class="form-group">
+            <label for="gebruikersnaam">Gebruikersnaam</label>
+            <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
+          </div>
+          <div class="form-group">
+            <label for="wachtwoord">Wachtwoord</label>
+            <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
+          </div>
+          <div class="form-group">
+            <label for="rooster">Rooster</label>
+            <input type="text" class="form-control" id="rooster" name="rooster" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Toevoegen</button>
+          <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
+        </form>
+      </div>
+      &nbsp;
+      &nbsp;
+      <div class="container">
+        <h1>Docent Toevoegen</h1>
+        <form action="{{ url_for('add_docent') }}" method="post">
+          <div class="form-group">
+            <label for="naam">Naam</label>
+            <input type="text" class="form-control" id="naam" name="naam" required>
+          </div>
+          <div class="form-group">
+            <label for="gebruikersnaam">Gebruikersnaam</label>
+            <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
+          </div>
+          <div class="form-group">
+            <label for="wachtwoord">Wachtwoord</label>
+            <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Toevoegen</button>
+          <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
+        </form>
+      </div>
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp;  
+
+    </body>
 </body>
 </html>
