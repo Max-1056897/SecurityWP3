@@ -112,7 +112,6 @@ def docent_dashboard():
 
         flash('Aanwezigheidsstatus bijgewerkt!')
 
-
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
 
@@ -128,26 +127,48 @@ def docent_dashboard():
 
     les_dict = {}
     for les in lessen:
-        les_dict[les[0]] = {'vak': les[1], 'datum': les[2], 'starttijd': les[3], 'eindtijd': les[4], 'docent_id': les[5]}
+        les_dict[les[0]] = {'vak': les[1], 'datum': les[2], 'starttijd': les[3], 'eindtijd': les[4], 'docent_id': les[5], 'code': les[6]}
 
     return render_template('docent_dashboard.html', les_dict=les_dict, rows=rows, docent_dict=docent_dict, lessen=lessen)
 
 
-@app.route('/delete_code', methods=['POST', 'GET'])
-def delete_code():
+# @app.route('/docent_dashboard/delete', methods=['POST'])
+# def delete_code():
+#     conn = sqlite3.connect('aanwezigheidssysteem.db')
+#     c = conn.cursor()
+
+#     les_id = request.form['les_id']
+
+#     c.execute("SELECT code FROM lessen WHERE les_id = ?", (les_id,))
+#     code = c.fetchone()[0]
+
+#     c.execute("UPDATE lessen SET code = NULL WHERE les_id = ?", (les_id,))
+
+#     conn.commit()
+#     conn.close()
+
+#     flash(f'Code "{code}" is verwijderd voor de geselecteerde les.')
+
+#     # Redirect back to the dashboard
+#     return redirect(url_for('docent_dashboard'))
+
+@app.route('/delete_code/<int:id>', methods=['POST', 'GET'])
+def delete_code(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
-    c.execute('SELECT * FROM lessen')
-    lessen= c.fetchall()
-    if request.method == 'POST':
-        code_id = request.form['code']
-        print(code_id)
-        # les_id = request.form['les_id']
-        print(code_id)
-        print(lessen)
-    c.execute('DELETE FROM lessen WHERE code IS NOT NULL and les_id=?', (code_id))
+
+    # Verwijder de code uit de database
+    c.execute("UPDATE lessen SET code=NULL WHERE les_id=?", (id,))
     conn.commit()
-    return redirect(url_for('docent_dashboard', lessen=lessen, code_id=code_id))
+
+    conn.close()
+
+    flash('Code verwijderd!')
+
+    # Stuur de gebruiker terug naar de docent dashboard pagina
+    return redirect(url_for('docent_dashboard',id=id))
+
+
 
 
 @app.route('/les/<int:id>')
