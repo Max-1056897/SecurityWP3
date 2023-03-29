@@ -359,58 +359,97 @@ def login_admin():
         return render_template('login.html')
 
 
-
 @app.route('/admin')
-def admin_dashboard():
+def admin():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
     c.execute("SELECT * FROM leerlingen")
-    students = c.fetchall()
+    leerlingen = c.fetchall()
     c.execute("SELECT * FROM docenten")
-    teachers = c.fetchall()
+    docenten = c.fetchall()
     conn.close()
-    return render_template('admin.html', students=students, teachers=teachers)
+    return render_template('admin.html', leerlingen=leerlingen, docenten=docenten)
 
-@app.route('/update_student', methods=['POST'])
-def update_student_data():
+
+@app.route('/edit_leerling/<int:leerling_id>', methods=['GET', 'POST'])
+def edit_leerling(leerling_id):
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM leerlingen WHERE leerling_id = ?', (leerling_id,))
+    leerling = c.fetchone()
+    conn.close()
     if request.method == 'POST':
-        # Haal de gegevens op uit het verzoek
-        id = request.form['id']
-        name = request.form['naam']
-        username = request.form['gebruikersnaam']
-        password = request.form['wachtwoord']
-        schedule = request.form['rooster']
-
-        # Bijwerken van de database
+        naam = request.form['naam']
+        gebruikersnaam = request.form['gebruikersnaam']
+        wachtwoord = request.form['wachtwoord']
+        rooster = request.form['rooster']
         conn = sqlite3.connect('aanwezigheidssysteem.db')
         c = conn.cursor()
-        c.execute('UPDATE leerlingen SET naam = ?, gebruikersnaam = ?, wachtwoord = ?, rooster = ? WHERE leerling_id = ?', (name, username, password, schedule, id))
+        c.execute('UPDATE leerlingen SET naam = ?, gebruikersnaam = ?, wachtwoord = ?, rooster = ? WHERE leerling_id = ?', (naam, gebruikersnaam, wachtwoord, rooster, leerling_id))
         conn.commit()
         conn.close()
+        # flash('Leerling updated successfully', 'success')
+        return redirect(url_for('admin'))
+    return render_template('edit_leerling.html', leerling=leerling)
 
-        # Terugsturen van de bijgewerkte rij
-        student = [id, name, username, password, schedule]
-        return render_template('student_row.html', student=student)
+    
+@app.route('/save_leerling/<int:leerling_id>')
+def save_leerling(leerling_id):
+    flash('Leerling not updated', 'danger')
+    return redirect(url_for('admin'))
 
-@app.route('/update_teacher', methods=['POST'])
-def update_teacher_data():
+@app.route('/edit_docent/<int:docent_id>', methods=['GET', 'POST'])
+def edit_docent(docent_id):
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM docenten WHERE docent_id = ?', (docent_id,))
+    docent = c.fetchone()
+    conn.close()
     if request.method == 'POST':
-        # Haal de gegevens op uit het verzoek
-        id = request.form['id']
-        name = request.form['naam']
-        username = request.form['gebruikersnaam']
-        password = request.form['wachtwoord']
-
-        # Bijwerken van de database
+        naam = request.form['naam']
+        gebruikersnaam = request.form['gebruikersnaam']
+        wachtwoord = request.form['wachtwoord']
         conn = sqlite3.connect('aanwezigheidssysteem.db')
         c = conn.cursor()
-        c.execute('UPDATE docenten SET naam = ?, gebruikersnaam = ?, wachtwoord = ? WHERE docent_id = ?', (name, username, password, id))
+        c.execute('UPDATE docenten SET naam = ?, gebruikersnaam = ?, wachtwoord = ? WHERE docent_id = ?', (naam, gebruikersnaam, wachtwoord, docent_id))
         conn.commit()
         conn.close()
+        # flash('Docent updated successfully', 'success')
+        return redirect(url_for('admin'))
+    return render_template('edit_docent.html', docent=docent)
 
-        # Terugsturen van de bijgewerkte rij
-        teacher = [id, name, username, password]
-        return render_template('teacher_row.html', teacher=teacher)
+@app.route('/add_leerling', methods=['GET', 'POST'])
+def add_leerling():
+    if request.method == 'POST':
+        naam = request.form['naam']
+        gebruikersnaam = request.form['gebruikersnaam']
+        wachtwoord = request.form['wachtwoord']
+        rooster = request.form['rooster']
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute('INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES (?, ?, ?, ?)', (naam, gebruikersnaam, wachtwoord, rooster))
+        conn.commit()
+        conn.close()
+        flash('Leerling toegevoegd', 'success')
+        return redirect(url_for('admin'))
+    return render_template('admin.html')
+
+@app.route('/add_docent', methods=['GET', 'POST'])
+def add_docent():
+    if request.method == 'POST':
+        naam = request.form['naam']
+        gebruikersnaam = request.form['gebruikersnaam']
+        wachtwoord = request.form['wachtwoord']
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute('INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)', (naam, gebruikersnaam, wachtwoord))
+        conn.commit()
+        conn.close()
+        flash('Docent toegevoegd', 'success')
+        return redirect(url_for('admin'))
+    return render_template('admin.html')
+
+
 
 
 if __name__ == "__main__":
