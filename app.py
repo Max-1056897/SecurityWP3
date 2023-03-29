@@ -112,6 +112,7 @@ def docent_dashboard():
 
         flash('Aanwezigheidsstatus bijgewerkt!')
 
+
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
 
@@ -131,6 +132,22 @@ def docent_dashboard():
 
     return render_template('docent_dashboard.html', les_dict=les_dict, rows=rows, docent_dict=docent_dict, lessen=lessen)
 
+
+@app.route('/delete_code', methods=['POST', 'GET'])
+def delete_code():
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM lessen')
+    lessen= c.fetchall()
+    if request.method == 'POST':
+        code_id = request.form['code']
+        print(code_id)
+        # les_id = request.form['les_id']
+        print(code_id)
+        print(lessen)
+    c.execute('DELETE FROM lessen WHERE code IS NOT NULL and les_id=?', (code_id))
+    conn.commit()
+    return redirect(url_for('docent_dashboard', lessen=lessen, code_id=code_id))
 
 
 @app.route('/les/<int:id>')

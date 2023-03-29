@@ -41,6 +41,7 @@
             <th>Starttijd</th>
             <th>Eindtijd</th>
             <th>Aanwezigheid</th>
+            <th>Code</th>
           </tr>
         </thead>
         <tbody>
@@ -51,6 +52,12 @@
               <td>{{ les[3] }}</td>
               <td>{{ les[4] }}</td>
               <td><a href="/les/{{ les[0] }}">Bekijk</a></td>
+              <td><form action="/delete_code" method="POST"> 
+              <input type="hidden" name="code" value="{{ les[5] }}"> 
+              <input type="hidden" name="les_id" value="{{ les_id[0] }}"> 
+              <button class="btn btn-danger">DELETE</button> </form> </td>
+              </form>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
