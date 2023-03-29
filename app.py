@@ -5,6 +5,8 @@ import os
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 import random
+import threading
+import time
 
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
@@ -333,7 +335,15 @@ def les_overzicht_api(id):
         conn.close()
         return jsonify(error="Les niet gevonden")
 
-
+def update_code(vak):
+    while True:
+        code = random.randint(1000, 9999)
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
+        conn.commit()
+        conn.close()
+        time.sleep(1.5)
 
 @app.route('/docent/lessen/code', methods=['GET', 'POST'])
 def docent_lessen_code():
@@ -348,6 +358,11 @@ def docent_lessen_code():
         row = c.fetchone()
         conn.close()
         code = row[0] if row else None
+
+        # Start de update_code() functie in een aparte thread
+        t = threading.Thread(target=update_code, args=(vak,))
+        t.start()
+
         return redirect(url_for('docent_lessen_code', code=code))
 
     conn = sqlite3.connect('aanwezigheidssysteem.db')
