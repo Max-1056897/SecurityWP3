@@ -115,7 +115,7 @@ def docent_dashboard():
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
 
-    c.execute('SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, lessen.docent_id FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id')
+    c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id")
     rows = c.fetchall()
 
     docent_dict = {}
