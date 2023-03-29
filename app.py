@@ -19,7 +19,7 @@ CORS(app)
 def index():
     return render_template("index.html")
 
-@app.route("/login_leerling", methods=["POST"])
+@app.route("/login_leerling", methods=["POST"]) 
 def login_leerling():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]

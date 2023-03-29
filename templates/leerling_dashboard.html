@@ -2,43 +2,83 @@
 <html>
 <head>
 	<title>Aanwezigheidssysteem</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<style>
+		body {
+			padding-top: 50px;
+		}
+	</style>
 </head>
 <body>
-	<div class="container">
-		<h2>Aanwezigheidssysteem</h2>
-		{% for row in lessen %}
-		<form method="post" action="">
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th>Les ID</th>
-						<th>Vak</th>
-						<th>Datum</th>
-						<th>Starttijd</th>
-						<th>Eindtijd</th>
-						<th>Code</th>
-						<th>Reden</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>{{ row[0] }}</td>
-						<td>{{ row[1] }}</td>
-						<td>{{ row[2] }}</td>
-						<td>{{ row[3] }}</td>
-						<td>{{ row[4] }}</td>
-						<td><input type="text" name="code" class="form-control" required></td>
-						<td><input type="text" name="reden" class="form-control"></td>
-						<input type="hidden" name="les_id" value="{{ row[0] }}">
-					</tr>
-				</tbody>
-			</table>
-			<button type="submit" class="btn btn-primary">Versturen</button>
-		</form>
-		{% endfor %}
-	</div>
-</body>
-</html>
+	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+		<a class="navbar-brand" href="#">Leerling - 	Aanwezigheidssysteem</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarCollapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="#"></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#"></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#"></a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<main role="main" class="container">
+		<h1 class="mt-5">MELD JE AANWEZIGHEID</h1>
+		<p class="lead">Hieronder vind je een overzicht van de lessen waarvoor je aanwezigheid moet registreren.</p>
+		<div class="row">
+			{% for row in lessen %}
+			<div class="col-md-6 mb-3">
+				<div class="card">
+					<div class="card-header">
+						<strong>Les ID: </strong>{{ row[0] }}
+					</div>
+					<div class="card-body">
+						<h5 class="card-title">{{ row[1] }}</h5>
+						<p class="card-text"><strong>Datum: </strong>{{ row[2] }}</p>
+						<p class="card-text"><strong>Starttijd: </strong>{{ row[3] }}</p>
+						<p class="card-text"><strong>Eindtijd: </strong>{{ row[4] }}</p>
+						<form method="post" action="">
+							<div class="form-group">
+								<label for="code">Code:</label>
+								<input type="text" name="code" class="form-control" id="code" required>
+							</div>
+							<div class="form-group">
+								<label for="reden">Reden:</label>
+								<input type="text" name="reden" class="form-control" id="reden">
+							</div>
+							<input type="hidden" name="les_id" value="{{ row[0] }}">
+							<button type="submit" class="btn btn-primary">Versturen</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</main>
+	<footer class="footer">
+		<div class="container">
+			<span class="text-muted">&copy; 2023 Aanwezigheidssysteem</span>
+			&nbsp;
+			&nbsp;
+			&nbsp;
+		</div>
+		&nbsp;
+		&nbsp;
+		&nbsp;
+	</footer>
+	</body>
+	</html>
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	
