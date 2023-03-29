@@ -187,10 +187,13 @@ def les_overzicht(id):
         # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
         c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
         aanwezigheden = c.fetchall()
+        c.execute("SELECT COUNT(*) FROM aanwezigheid WHERE les_id=? AND aanwezig=1", (id,))
+        count = c.fetchone()[0]
+
         conn.close()
 
         # Render de template met de aanwezigheidsgegevens en de lesgegevens
-        return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak)
+        return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak, count=count)
     else:
         # De les is niet gevonden, geef een foutmelding
         conn.close()
