@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Docent Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Docent Dashboard</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/docent_dashboard">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen">Lessen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin">CRUD PANEEL</a>
+          </li>
+        </ul>
+      </div>  
+    </nav>
+    <br>
+    <div class="container">
+      <h2>Les overzicht</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Vak</th>
+            <th>Datum</th>
+            <th>Starttijd</th>
+            <th>Eindtijd</th>
+            <th>Aanwezigheid</th>
+            <th>Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for les in lessen %}
+            <tr>
+              <td>{{ les[1] }}</td>
+              <td>{{ les[2] }}</td>
+              <td>{{ les[3] }}</td>
+              <td>{{ les[4] }}</td>
+              <td><a href="/les/{{ les[0] }}">Bekijk</a></td>
+              <td>
+                <form id="delete-form-{{ les[0] }}" action="/delete_code/{{ les[0] }}" method="POST"> 
+                  <input type="hidden" name="code" value="{{ les[6] }}"> 
+                  <input type="hidden" name="les_id" value="{{ les[0] }}"> 
+                  <button class="btn btn-danger" onclick="confirmDelete('{{ les[0] }}')">DELETE</button>
+                </form> 
+              </td>
+              
+              <script>
+              function confirmDelete(les_id) {
+                if (confirm("Weet je zeker dat je deze code wilt verwijderen?")) {
+                  document.getElementById('delete-form-' + les_id).submit();
+                }
+              }
+              </script>
+              
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="container">
+      <h2>Leerling details</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Leerling</th>
+            <th>Aanwezigheid</th>
+            <th>Vak</th>
+            <th>Docent</th>
+          </tr>
+        </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row[0] }}</td>
+                <td>
+                  {% if row[1] == 1 %}
+                    <button class="btn btn-success">Aanwezig</button>
+                  {% else %}
+                    <button class="btn btn-danger">Afwezig</button>
+                  {% endif %}
+                </td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+       
+      </table>
+    </div>
+    
+    
+    
+    <font color="white"><h1>.</h1></font>
+    <font color="white"><h1>.</h1></font>
+    <font color="white"><h1>.</h1></font>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  </body>
+</html>

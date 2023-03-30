@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Les</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Aanwezigheid voor {{ vak[0] }}</h1>
+      <div class="container">
+        <p>Aantal aanwezigen: {{ count }}</p>
+        <table class="table">
+          <!-- rest van de code -->
+        </table>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Leerling</th>
+            <th>Aanwezig</th>
+            <th>Reden</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+      </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script>
+      // Configure jQuery to run in noConflict mode
+      jQuery.noConflict();
+
+      // Define a function to refresh the data
+      function refreshData() { 
+        jQuery.get("/API/les/{{ les[0] }}", function(data) { 
+          var tableBody = jQuery("#table-body");
+          tableBody.empty(); // Clear the table before adding new data
+          jQuery.each(data.aanwezigheid_naam, function(index, naam) {
+            var row = jQuery("<tr></tr>");
+            var naamColumn = jQuery("<td></td>").text(naam);
+            var aanwezigheidsBolletje = jQuery("<span></span>").addClass("badge badge-success").text("Aanwezig");
+            var afwezigheidsBolletje = jQuery("<span></span>").addClass("badge badge-danger").text("Afwezig");
+            if (data.aanwezigheid_aanwezig[index] == 1) {
+              var aanwezigColumn = jQuery("<td></td>").append(aanwezigheidsBolletje);
+            } else {
+              var aanwezigColumn = jQuery("<td></td>").append(afwezigheidsBolletje);
+            }
+            var redenColumn = jQuery("<td></td>").text("");
+            row.append(naamColumn).append(aanwezigColumn).append(redenColumn);
+            tableBody.append(row);
+          });
+        });
+      }
+
+      // Use setInterval to periodically refresh the data
+      jQuery(document).ready(function() {
+        refreshData(); // Call once on page load
+        setInterval(refreshData, 1000); // Call every 5 seconds
+      });
+    </script>
+  </body>
+</html>

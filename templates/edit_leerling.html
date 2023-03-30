@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit Leerling</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Docent Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/docent_dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen">Lessen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">CRUD PANEEL</a>
+            </li>
+          </ul>
+        </div>  
+      </nav>
+      &nbsp;
+      &nbsp;
+    <div class="container">
+      <h1>Edit Leerling</h1>
+      <form method="POST" action="/edit_leerling/{{ leerling[0] }}" class="form">
+        <div class="form-group">
+          <label for="naam">Naam:</label>
+          <input type="text" name="naam" value="{{ leerling[1] }}" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="gebruikersnaam">Gebruikersnaam:</label>
+          <input type="text" name="gebruikersnaam" value="{{ leerling[2] }}" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="wachtwoord">Wachtwoord:</label>
+          <input type="password" name="wachtwoord" value="{{ leerling[3] }}" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="rooster">Rooster:</label>
+          <input type="text" name="rooster" value="{{ leerling[4] }}" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Opslaan</button>
+      </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper-base.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-kjoQNlIuV7Dm9ksKQV7mVuWg8E1bUwPe3Li3Tp6UkL6UQgu/AU/9XnPGnTkBTgNf" crossorigin="anonymous"></script>
+  </body>
+</html>
