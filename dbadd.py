@@ -1,53 +1,53 @@
-import sqlite3
+# import sqlite3
 
-conn = sqlite3.connect('aanwezigheidssysteem.db')
+# conn = sqlite3.connect('aanwezigheidssysteem.db')
 
-c = conn.cursor()
+# c = conn.cursor()
 
 
-c.execute('''CREATE TABLE IF NOT EXISTS leerlingen
-             (leerling_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              naam TEXT NOT NULL,
-              gebruikersnaam TEXT NOT NULL,
-              wachtwoord TEXT NOT NULL,
-              rooster TEXT NOT NULL)''')
+# c.execute('''CREATE TABLE IF NOT EXISTS leerlingen
+#              (leerling_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               naam TEXT NOT NULL,
+#               gebruikersnaam TEXT NOT NULL,
+#               wachtwoord TEXT NOT NULL,
+#               rooster TEXT NOT NULL)''')
 
-c.execute('''CREATE TABLE IF NOT EXISTS docenten
-             (docent_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              naam TEXT NOT NULL,
-              gebruikersnaam TEXT NOT NULL,
-              wachtwoord TEXT NOT NULL)''')
+# c.execute('''CREATE TABLE IF NOT EXISTS docenten
+#              (docent_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               naam TEXT NOT NULL,
+#               gebruikersnaam TEXT NOT NULL,
+#               wachtwoord TEXT NOT NULL)''')
 
-c.execute('''CREATE TABLE IF NOT EXISTS lessen
-             (les_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              vak TEXT NOT NULL,
-              datum TEXT NOT NULL,
-              starttijd TEXT NOT NULL,
-              eindtijd TEXT NOT NULL,
-              docent_id INTEGER NOT NULL,
-              code INTEGER,
-              FOREIGN KEY (docent_id) REFERENCES docenten(docent_id))''')
+# c.execute('''CREATE TABLE IF NOT EXISTS lessen
+#              (les_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               vak TEXT NOT NULL,
+#               datum TEXT NOT NULL,
+#               starttijd TEXT NOT NULL,
+#               eindtijd TEXT NOT NULL,
+#               docent_id INTEGER NOT NULL,
+#               code INTEGER,
+#               FOREIGN KEY (docent_id) REFERENCES docenten(docent_id))''')
 
-c.execute('''CREATE TABLE IF NOT EXISTS aanwezigheid
-             (aanwezigheid_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              leerling_id INTEGER NOT NULL,
-              les_id INTEGER NOT NULL,
-              aanwezig INTEGER NOT NULL,
-              reden TEXT,
-              FOREIGN KEY (leerling_id) REFERENCES leerlingen(leerling_id),
-              FOREIGN KEY (les_id) REFERENCES lessen(les_id))''')
+# c.execute('''CREATE TABLE IF NOT EXISTS aanwezigheid
+#              (aanwezigheid_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               leerling_id INTEGER NOT NULL,
+#               les_id INTEGER NOT NULL,
+#               aanwezig INTEGER NOT NULL,
+#               reden TEXT,
+#               FOREIGN KEY (leerling_id) REFERENCES leerlingen(leerling_id),
+#               FOREIGN KEY (les_id) REFERENCES lessen(les_id))''')
 
-c.execute('''CREATE TABLE IF NOT EXISTS klassen
-             (klas_id INTEGER PRIMARY KEY AUTOINCREMENT,
-              les_id INTEGER NOT NULL,
-              leerling_id INTEGER NOT NULL,
-              docent_id INTEGER NOT NULL,
-              lesnaam TEXT NOT NULL,
-              FOREIGN KEY (les_id) REFERENCES lessen(les_id),
-              FOREIGN KEY (leerling_id) REFERENCES leerlingen(leerling_id),
-              FOREIGN KEY (docent_id) REFERENCES docenten(docent_id))''')
+# c.execute('''CREATE TABLE IF NOT EXISTS klassen
+#              (klas_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#               les_id INTEGER NOT NULL,
+#               leerling_id INTEGER NOT NULL,
+#               docent_id INTEGER NOT NULL,
+#               lesnaam TEXT NOT NULL,
+#               FOREIGN KEY (les_id) REFERENCES lessen(les_id),
+#               FOREIGN KEY (leerling_id) REFERENCES leerlingen(leerling_id),
+#               FOREIGN KEY (docent_id) REFERENCES docenten(docent_id))''')
 
-conn.commit()
+# conn.commit()
 
 
 
@@ -165,12 +165,13 @@ conn.commit()
 # c = conn.cursor()
 
 # # Klas 1
+# klad_id = 1
 # les_id = 1
 # leerling_id = 1
 # docent_id = 1
 # lesnaam = 'Klas 1'
-# c.execute("INSERT INTO klassen (les_id, leerling_id, docent_id, lesnaam) VALUES (?, ?, ?, ?)",
-#           (les_id, leerling_id, docent_id, lesnaam))
+# c.execute("INSERT INTO klassen (klas_id, les_id, leerling_id, docent_id, lesnaam) VALUES (?, ?, ?, ?, ?, ?)",
+#           (klas_id, les_id, leerling_id, docent_id, lesnaam))
 
 # # Klas 2
 # les_id = 2
@@ -205,19 +206,69 @@ conn.commit()
 # conn.close()
 
 
+# import sqlite3
+
+# conn = sqlite3.connect('aanwezigheidssysteem.db')
+# c = conn.cursor()
+
+# # Voeg admin account toe
+# c.execute("INSERT INTO admin (gebruikersnaam, wachtwoord) VALUES (?, ?)", ('admin', 'admin'))
+
+# # Commit de veranderingen
+# conn.commit()
+
+# # Sluit de verbinding
+# conn.close()
+
+
+
 import sqlite3
 
 conn = sqlite3.connect('aanwezigheidssysteem.db')
 c = conn.cursor()
 
-# Voeg admin account toe
-c.execute("INSERT INTO admin (gebruikersnaam, wachtwoord) VALUES (?, ?)", ('admin', 'admin'))
+# Gegevens om in te voegen in de tabel klassen
+les_id = 1
+leerling_id = 1
+docent_id = 1
+lesnaam = '1A1'
 
-# Commit de veranderingen
+# Een SQL-query om gegevens in de tabel klassen in te voegen
+c.execute('''INSERT INTO klassen (les_id, leerling_id, docent_id, lesnaam)
+             VALUES (?, ?, ?, ?)''', (les_id, leerling_id, docent_id, lesnaam))
+
+# Gegevens om in te voegen in de tabel klassen
+les_id = 2
+leerling_id = 2
+docent_id = 2
+lesnaam = '1A2'
+
+# Een SQL-query om gegevens in de tabel klassen in te voegen
+c.execute('''INSERT INTO klassen (les_id, leerling_id, docent_id, lesnaam)
+             VALUES (?, ?, ?, ?)''', (les_id, leerling_id, docent_id, lesnaam))
+
+# Gegevens om in te voegen in de tabel klassen
+les_id = 3
+leerling_id = 3
+docent_id = 2
+lesnaam = '1A3'
+
+# Een SQL-query om gegevens in de tabel klassen in te voegen
+c.execute('''INSERT INTO klassen (les_id, leerling_id, docent_id, lesnaam)
+             VALUES (?, ?, ?, ?)''', (les_id, leerling_id, docent_id, lesnaam))
+
+# Gegevens om in te voegen in de tabel klassen
+les_id = 4
+leerling_id = 4
+docent_id = 3
+lesnaam = '2A1'
+
+# Een SQL-query om gegevens in de tabel klassen in te voegen
+c.execute('''INSERT INTO klassen (les_id, leerling_id, docent_id, lesnaam)
+             VALUES (?, ?, ?, ?)''', (les_id, leerling_id, docent_id, lesnaam))
+
+# Commit de wijzigingen in de database
 conn.commit()
 
-# Sluit de verbinding
+# Sluit de database connectie
 conn.close()
-
-
-

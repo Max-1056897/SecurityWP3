@@ -1,144 +1,196 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Admin Dashboard</title>
-    <!-- Bootstrap CSS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Admin Dashboard</title>
+      <!-- Bootstrap CSS -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Docent Dashboard</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/docent_dashboard">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/docent/lessen">Lessen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin">CRUD PANEEL</a>
-          </li>
-        </ul>
-      </div>  
-    </nav>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
     <body>
-      &nbsp;
-      <div class="container">
-        <h1>Leerlingen</h1>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Leerling ID</th>
-              <th>Naam</th>
-              <th>Gebruikersnaam</th>
-              <th>Wachtwoord</th>
-              <th>Rooster</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for leerling in leerlingen %}
-              <tr>
-                <td>{{ leerling[0] }}</td>
-                <td><input type="text" name="naam" value="{{ leerling[1] }}" class="form-control"></td>
-                <td><input type="text" name="gebruikersnaam" value="{{ leerling[2] }}" class="form-control"></td>
-                <td><input type="password" name="wachtwoord" value="{{ leerling[3] }}" class="form-control"></td>
-                <td><input type="text" name="rooster" value="{{ leerling[4] }}" class="form-control"></td>
-                <td><a href="/edit_leerling/{{ leerling[0] }}" class="btn btn-primary">Edit</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="container">
-        <h1>Docenten</h1>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Docent ID</th>
-              <th>Naam</th>
-              <th>Gebruikersnaam</th>
-              <th>Wachtwoord</th>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for docent in docenten %}
-              <tr>
-                <td>{{ docent[0] }}</td>
-                <td><input type="text" name="naam" value="{{ docent[1] }}" class="form-control"></td>
-                <td><input type="text" name="gebruikersnaam" value="{{ docent[2] }}" class="form-control"></td>
-                <td><input type="password" name="wachtwoord" value="{{ docent[3] }}" class="form-control"></td>
-                <td><a href="/edit_docent/{{ docent[0] }}" class="btn btn-primary">Edit</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="container">
-        <h1>Leerling Toevoegen</h1>
-        <form action="{{ url_for('add_leerling') }}" method="post">
-          <div class="form-group">
-            <label for="naam">Naam</label>
-            <input type="text" class="form-control" id="naam" name="naam" required>
-          </div>
-          <div class="form-group">
-            <label for="gebruikersnaam">Gebruikersnaam</label>
-            <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
-          </div>
-          <div class="form-group">
-            <label for="wachtwoord">Wachtwoord</label>
-            <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
-          </div>
-          <div class="form-group">
-            <label for="rooster">Rooster</label>
-            <input type="text" class="form-control" id="rooster" name="rooster" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Toevoegen</button>
-          <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
-        </form>
-      </div>
-      &nbsp;
-      &nbsp;
-      <div class="container">
-        <h1>Docent Toevoegen</h1>
-        <form action="{{ url_for('add_docent') }}" method="post">
-          <div class="form-group">
-            <label for="naam">Naam</label>
-            <input type="text" class="form-control" id="naam" name="naam" required>
-          </div>
-          <div class="form-group">
-            <label for="gebruikersnaam">Gebruikersnaam</label>
-            <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
-          </div>
-          <div class="form-group">
-            <label for="wachtwoord">Wachtwoord</label>
-            <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Toevoegen</button>
-          <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
-        </form>
-      </div>
-      &nbsp;
-      &nbsp;
-      &nbsp;
-      &nbsp;  
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="position: fixed; top: 0; width: 100%;">
 
-    </body>
-</body>
-</html>
+
+        <a class="navbar-brand" href="#">Docent Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/docent_dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen">Lessen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen/toevoegen">Toevoegen Les</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/docent/lessen/code">Code les generen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">CRUD PANEEL</a>
+            </li>
+          </ul>
+        </div>  
+      </nav>
+      <style>
+        body {
+          font-family: "Lato", sans-serif;
+        }
+        
+        .sidenav {
+          height: 100%;
+          width: 270px;
+          position: fixed;
+          z-index: 1;
+          top: auto;
+          left: 0;
+          background-color: lightgray;
+          overflow-x: hidden;
+          padding-top: 20px;
+        }
+        
+        .sidenav a {
+          padding: 6px 6px 6px 32px;
+          text-decoration: none;
+          font-size: 25px;
+          color: #818181;
+          display: block;
+        }
+        
+        .sidenav a:hover {
+          color: #f1f1f1;
+        }
+        
+        .main {
+          margin-left: 200px; /* Same as the width of the sidenav */
+        }
+        
+        @media screen and (max-height: 450px) {
+          .sidenav {padding-top: 15px;}
+          .sidenav a {font-size: 18px;}
+        }
+        </style>
+        </head>
+        <body>
+        
+        <div class="sidenav">
+          <a href="#">Leerling informatie</a>
+          <a href="#">Docent informatie</a>
+          <a href="#">Klassen informatie</a>
+          <a href="#">Overige informatie</a>
+        </div>
+        
+        <div class="main">
+        </div>
+      <body>
+        &nbsp;
+        <div class="container">
+          <h1>Leerlingen</h1>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Leerling ID</th>
+                <th>Naam</th>
+                <th>Gebruikersnaam</th>
+                <th>Wachtwoord</th>
+                <th>Rooster</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for leerling in leerlingen %}
+                <tr>
+                  <td>{{ leerling[0] }}</td>
+                  <td><input type="text" name="naam" value="{{ leerling[1] }}" class="form-control"></td>
+                  <td><input type="text" name="gebruikersnaam" value="{{ leerling[2] }}" class="form-control"></td>
+                  <td><input type="password" name="wachtwoord" value="{{ leerling[3] }}" class="form-control"></td>
+                  <td><input type="text" name="rooster" value="{{ leerling[4] }}" class="form-control"></td>
+                  <td><a href="/edit_leerling/{{ leerling[0] }}" class="btn btn-primary">Edit</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="container">
+          <h1>Docenten</h1>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Docent ID</th>
+                <th>Naam</th>
+                <th>Gebruikersnaam</th>
+                <th>Wachtwoord</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for docent in docenten %}
+                <tr>
+                  <td>{{ docent[0] }}</td>
+                  <td><input type="text" name="naam" value="{{ docent[1] }}" class="form-control"></td>
+                  <td><input type="text" name="gebruikersnaam" value="{{ docent[2] }}" class="form-control"></td>
+                  <td><input type="password" name="wachtwoord" value="{{ docent[3] }}" class="form-control"></td>
+                  <td><a href="/edit_docent/{{ docent[0] }}" class="btn btn-primary">Edit</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="container">
+          <h1>Leerling Toevoegen</h1>
+          <form action="{{ url_for('add_leerling') }}" method="post">
+            <div class="form-group">
+              <label for="naam">Naam</label>
+              <input type="text" class="form-control" id="naam" name="naam" required>
+            </div>
+            <div class="form-group">
+              <label for="gebruikersnaam">Gebruikersnaam</label>
+              <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
+            </div>
+            <div class="form-group">
+              <label for="wachtwoord">Wachtwoord</label>
+              <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
+            </div>
+            <div class="form-group">
+              <label for="rooster">Rooster</label>
+              <input type="text" class="form-control" id="rooster" name="rooster" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Toevoegen</button>
+            <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
+          </form>
+        </div>
+        &nbsp;
+        &nbsp;
+        <div class="container">
+          <h1>Docent Toevoegen</h1>
+          <form action="{{ url_for('add_docent') }}" method="post">
+            <div class="form-group">
+              <label for="naam">Naam</label>
+              <input type="text" class="form-control" id="naam" name="naam" required>
+            </div>
+            <div class="form-group">
+              <label for="gebruikersnaam">Gebruikersnaam</label>
+              <input type="text" class="form-control" id="gebruikersnaam" name="gebruikersnaam" required>
+            </div>
+            <div class="form-group">
+              <label for="wachtwoord">Wachtwoord</label>
+              <input type="password" class="form-control" id="wachtwoord" name="wachtwoord" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Toevoegen</button>
+            <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
+          </form>
+        </div>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;  
+
+      </body>
+  </body>
+  </html>
