@@ -8,20 +8,22 @@ import random
 import threading
 import time
 
+from models.lessenmodel import LessenModel
+
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
 FLASK_PORT = 81
 FLASK_DEBUG = True
 
 app = Flask(__name__)
-app.secret_key = "Hogeschool Rotterdam" 
+app.secret_key = "Hogeschool Rotterdam"
 CORS(app)
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/login_leerling", methods=["POST"]) 
+@app.route("/login_leerling", methods=["POST"])
 def login_leerling():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]
@@ -60,7 +62,7 @@ def get_db_connection():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
     return conn
-    
+
 @app.route('/leerling_dashboard', methods=["POST", "GET"])
 def leerling_dashboard():
     conn = get_db_connection()
@@ -214,33 +216,30 @@ def les_overzicht(id):
 
 
 
+
+
+lessen_model = LessenModel()
+
 @app.route('/docent/lessen/toevoegen', methods=['GET'])
 def docent_lessen_toevoegen():
-	conn = sqlite3.connect('aanwezigheidssysteem.db')
-	c = conn.cursor()
-	klassen = c.execute("SELECT klas_id, lesnaam FROM klassen").fetchall()
-	conn.close()
-	return render_template('docent_lessen.html', klassen=klassen)
+    klassen = lessen_model.get_all_klassen()
+    return render_template('docent_lessen.html', klassen=klassen)
 
 @app.route('/docent/lessen/toevoegen', methods=['POST'])
 def docent_lessen_toevoegen_post():
-	vak = request.form['vak']
-	datum = request.form['datum']
-	starttijd = request.form['starttijd']
-	eindtijd = request.form['eindtijd']
-	docent_id = request.form['docent_id']
-	klas_id = request.form['klas_id']
-	conn = sqlite3.connect('aanwezigheidssysteem.db')
-	c = conn.cursor()
-	c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id, code) VALUES (?, ?, ?, ?, ?, ?)", (vak, datum, starttijd, eindtijd, docent_id, klas_id))
-	conn.commit()
-	conn.close()
-	return redirect(url_for('docent_lessen_overzicht'))
+    vak = request.form['vak']
+    datum = request.form['datum']
+    starttijd = request.form['starttijd']
+    eindtijd = request.form['eindtijd']
+    docent_id = request.form['docent_id']
+    klas_id = request.form['klas_id']
+    lessen_model.add_lesson(vak, datum, starttijd, eindtijd, docent_id, klas_id)
+    return redirect(url_for('docent_lessen_overzicht'))
 
 
 @app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
 def docent_lessen_overzicht():
-    docent_id = 1 
+    docent_id = 1
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
     c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
@@ -249,18 +248,18 @@ def docent_lessen_overzicht():
     return render_template('docent_lessen.html', lessen=result)
 
 @app.route('/add_les', methods=['POST'])
-def add_les():  
+def add_les():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
     vak = request.form['vak']
     datum = request.form['datum']
     starttijd = request.form['starttijd']
     eindtijd = request.form['eindtijd']
-    docent_id = request.form['docent_id'] 
+    docent_id = request.form['docent_id']
     c.execute('INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)',
     (vak, datum, starttijd, eindtijd, docent_id))
     conn.commit()
-    conn.close()     
+    conn.close()
     return redirect('/docent/lessen')
 
 ## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
@@ -431,7 +430,7 @@ def edit_leerling(leerling_id):
         return redirect(url_for('admin'))
     return render_template('edit_leerling.html', leerling=leerling)
 
-    
+
 @app.route('/save_leerling/<int:leerling_id>')
 def save_leerling(leerling_id):
     flash('Leerling not updated', 'danger')
