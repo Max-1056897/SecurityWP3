@@ -5,6 +5,8 @@ import os
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 import random
+import threading
+import time
 
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
@@ -115,7 +117,7 @@ def docent_dashboard():
     c.execute("SELECT * FROM lessen")
     lessen = c.fetchall()
 
-    c.execute('SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, lessen.docent_id FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id')
+    c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id")
     rows = c.fetchall()
 
     docent_dict = {}
@@ -187,10 +189,13 @@ def les_overzicht(id):
         # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
         c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
         aanwezigheden = c.fetchall()
+        c.execute("SELECT COUNT(*) FROM aanwezigheid WHERE les_id=? AND aanwezig=1", (id,))
+        count = c.fetchone()[0]
+
         conn.close()
 
         # Render de template met de aanwezigheidsgegevens en de lesgegevens
-        return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak)
+        return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak, count=count)
     else:
         # De les is niet gevonden, geef een foutmelding
         conn.close()
@@ -330,7 +335,15 @@ def les_overzicht_api(id):
         conn.close()
         return jsonify(error="Les niet gevonden")
 
-
+def update_code(vak):
+    while True:
+        code = random.randint(1000, 9999)
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
+        conn.commit()
+        conn.close()
+        time.sleep(1.5)
 
 @app.route('/docent/lessen/code', methods=['GET', 'POST'])
 def docent_lessen_code():
@@ -345,6 +358,11 @@ def docent_lessen_code():
         row = c.fetchone()
         conn.close()
         code = row[0] if row else None
+
+        # Start de update_code() functie in een aparte thread
+        t = threading.Thread(target=update_code, args=(vak,))
+        t.start()
+
         return redirect(url_for('docent_lessen_code', code=code))
 
     conn = sqlite3.connect('aanwezigheidssysteem.db')
