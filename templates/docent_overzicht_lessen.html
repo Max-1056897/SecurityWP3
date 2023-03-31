@@ -31,7 +31,7 @@
           <a class="nav-link" href="/admin">CRUD PANEEL</a>
         </li>
       </ul>
-    </div>  
+    </div>
   </nav>
 	&nbsp;
 	&nbsp;
@@ -51,34 +51,34 @@
         </table>
     </div>
 	<script>
-		
+
 		$(document).ready(function() {
 
     function refreshTable() {
         $.ajax({
-            url: "http://localhost:81/API/lessen",
+            url: "/API/lessen",
             type: "GET",
             dataType: "json",
             success: function(data) {
-                var table = ""; 
+                var table = "";
                 for (var i = 0; i < data.length; i++) {
-                
+
                     var vak = data[i].vak;
                     var datum = data[i].datum;
                     var starttijd = data[i].starttijd;
                     var eindtijd = data[i].eindtijd;
                     var docent_id = data[i].docent_id;
-                  
+
                     table += "<tr><td>" + vak + "</td><td>" + datum + "</td><td>" + starttijd + "</td><td>" + eindtijd + "</td><td>" + docent_id + "</td></tr>";
                 }
-                $("#table-container").html(table); 
+                $("#table-container").html(table);
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown);
             }
         });
     }
-    
+
     // Voer refreshTable functie elke seconde uit
     setInterval(refreshTable, 1000);
 });
@@ -86,7 +86,7 @@
 
 
 		</script>
-		
+
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
