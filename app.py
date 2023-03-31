@@ -9,6 +9,8 @@ import threading
 import time
 
 from models.lessenmodel import LessenModel
+from models.loginmodel import LoginModel
+from models.leerlingmodel import LeerlingModel
 
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
@@ -19,26 +21,19 @@ app = Flask(__name__)
 app.secret_key = "Hogeschool Rotterdam"
 CORS(app)
 
+lessen_model = LessenModel()
+login_model = LoginModel()
+leerling_model = LeerlingModel()
+
+# Login routes
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/login_leerling", methods=["POST"])
-def login_leerling():
-    gebruikersnaam = request.form["gebruikersnaam"]
-    wachtwoord = request.form["wachtwoord"]
-    conn = sqlite3.connect("aanwezigheidssysteem.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM leerlingen WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
-    leerling = c.fetchone()
-    conn.close()
-
-    if leerling:
-        session["gebruikersnaam"] = leerling[2]
-        session["leerling_id"] = leerling[0]
-        return redirect("/leerling_dashboard")
-    else:
-        return render_template("index.html", error="Ongeldige gebruikersnaam of wachtwoord")
 
 @app.route("/login_docent", methods=["POST"])
 def login_docent():
@@ -62,6 +57,45 @@ def get_db_connection():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+
+# @app.route('/login', methods=['GET', 'POST'])
+# def login_admin():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+#         login = login_model.login_admin()
+#         if user:
+#             session['user'] = user
+#             return redirect(url_for('admin'))
+#         else:
+#             return render_template('login.html', error='Invalid username or password')
+#     else:
+#         return render_template('login.html', login=login)
+
+
+@app.route("/login_leerling", methods=["POST"])
+def login_leerling():
+    gebruikersnaam = request.form["gebruikersnaam"]
+    wachtwoord = request.form["wachtwoord"]
+    conn = sqlite3.connect("aanwezigheidssysteem.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM leerlingen WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
+    leerling = c.fetchone()
+    conn.close()
+
+    if leerling:
+        session["gebruikersnaam"] = leerling[2]
+        session["leerling_id"] = leerling[0]
+        return redirect("/leerling_dashboard")
+    else:
+        return render_template("index.html", error="Ongeldige gebruikersnaam of wachtwoord")
+
+
+# Leerling routes 
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+
 
 @app.route('/leerling_dashboard', methods=["POST", "GET"])
 def leerling_dashboard():
@@ -88,6 +122,18 @@ def leerling_dashboard():
     conn.close()
     return render_template('leerling_dashboard.html', lessen=lessen)
 
+@app.route('/API/leerlingen')
+def export_leerlingen():
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM leerlingen")
+    rows = cur.fetchall()
+    result = []
+    for row in rows:
+        result.append(dict(row))
+    return jsonify(result)
+
 
 @app.route('/aanwezigheid', methods=['POST'])
 def aanwezigheid():
@@ -101,6 +147,12 @@ def aanwezigheid():
     conn.commit()
     conn.close()
     return 'Aanwezigheid opgeslagen!'
+
+
+# Docent routes
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+
 
 @app.route('/docent_dashboard', methods=['GET', 'POST'])
 def docent_dashboard():
@@ -136,25 +188,87 @@ def docent_dashboard():
     return render_template('docent_dashboard.html', les_dict=les_dict, rows=rows, docent_dict=docent_dict, lessen=lessen)
 
 
-# @app.route('/docent_dashboard/delete', methods=['POST'])
-# def delete_code():
-#     conn = sqlite3.connect('aanwezigheidssysteem.db')
-#     c = conn.cursor()
+@app.route('/docent/lessen/toevoegen', methods=['GET'])
+def docent_lessen_toevoegen():
+    klassen = lessen_model.get_all_klassen()
+    return render_template('docent_lessen.html', klassen=klassen)
 
-#     les_id = request.form['les_id']
 
-#     c.execute("SELECT code FROM lessen WHERE les_id = ?", (les_id,))
-#     code = c.fetchone()[0]
+@app.route('/docent/lessen/toevoegen', methods=['POST'])
+def docent_lessen_toevoegen_post():
+    vak = request.form['vak']
+    datum = request.form['datum']
+    starttijd = request.form['starttijd']
+    eindtijd = request.form['eindtijd']
+    docent_id = request.form['docent_id']
+    klas_id = request.form['klas_id']
+    lessen_model.add_lesson(vak, datum, starttijd, eindtijd, docent_id, klas_id)
+    return redirect(url_for('docent_lessen_overzicht'))
 
-#     c.execute("UPDATE lessen SET code = NULL WHERE les_id = ?", (les_id,))
 
-#     conn.commit()
-#     conn.close()
+@app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
+def docent_lessen_overzicht():
+    docent_id = 1
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+    result = c.fetchall()
+    conn.close()
+    return render_template('docent_lessen.html', lessen=result)
 
-#     flash(f'Code "{code}" is verwijderd voor de geselecteerde les.')
 
-#     # Redirect back to the dashboard
-#     return redirect(url_for('docent_dashboard'))
+@app.route('/docent/lessen', methods=["GET","POST"])
+def docent_alle_lessen():
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lessen")
+    result = c.fetchall()
+    conn.close()
+    return render_template('docent_overzicht_lessen.html', lessen=result)
+
+
+@app.route("/docent/lessen.json", methods=["GET", "POST"])
+def lessen():
+
+    json_path = os.path.join('lessen.json')
+
+
+    with open(json_path, 'r') as json_file:
+        json_data = json_file.read()
+
+    return jsonify(json_data)
+
+
+@app.route('/docent/lessen/code', methods=['GET', 'POST'])
+def docent_lessen_code():
+    if request.method == 'POST':
+        vak = request.form['vak']
+        code = random.randint(1000, 9999)
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
+        conn.commit()
+        c.execute("SELECT code FROM lessen WHERE vak=?", (vak,))
+        row = c.fetchone()
+        conn.close()
+        code = row[0] if row else None
+
+        # Start de update_code() functie in een aparte thread
+        t = threading.Thread(target=update_code, args=(vak,))
+        t.start()
+
+        return redirect(url_for('docent_lessen_code', code=code))
+
+    conn = sqlite3.connect('aanwezigheidssysteem.db')
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT vak FROM lessen")
+    vakken = c.fetchall()
+    conn.close()
+
+    code = request.args.get('code')
+
+    return render_template('docent_lessen_code.html', vakken=vakken, code=code)
+
 
 @app.route('/delete_code/<int:id>', methods=['POST', 'GET'])
 def delete_code(id):
@@ -173,6 +287,9 @@ def delete_code(id):
     return redirect(url_for('docent_dashboard',id=id))
 
 
+# Les routes
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 
 @app.route('/les/<int:id>')
@@ -204,49 +321,6 @@ def les_overzicht(id):
         return "Les niet gevonden"
 
 
-
-# @app.route('/les/<int:id>')
-# def les(id):
-#     conn = sqlite3.connect('aanwezigheidssysteem.db')
-#     c = conn.cursor()
-#     c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE les_id=?", (id,))
-#     aanwezigheden = c.fetchall()
-#     conn.close()
-#     return render_template('les.html', aanwezigheden=aanwezigheden, les_id=id)
-
-
-
-
-
-lessen_model = LessenModel()
-
-@app.route('/docent/lessen/toevoegen', methods=['GET'])
-def docent_lessen_toevoegen():
-    klassen = lessen_model.get_all_klassen()
-    return render_template('docent_lessen.html', klassen=klassen)
-
-@app.route('/docent/lessen/toevoegen', methods=['POST'])
-def docent_lessen_toevoegen_post():
-    vak = request.form['vak']
-    datum = request.form['datum']
-    starttijd = request.form['starttijd']
-    eindtijd = request.form['eindtijd']
-    docent_id = request.form['docent_id']
-    klas_id = request.form['klas_id']
-    lessen_model.add_lesson(vak, datum, starttijd, eindtijd, docent_id, klas_id)
-    return redirect(url_for('docent_lessen_overzicht'))
-
-
-@app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
-def docent_lessen_overzicht():
-    docent_id = 1
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
-    result = c.fetchall()
-    conn.close()
-    return render_template('docent_lessen.html', lessen=result)
-
 @app.route('/add_les', methods=['POST'])
 def add_les():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -262,42 +336,6 @@ def add_les():
     conn.close()
     return redirect('/docent/lessen')
 
-## DEZE DOCENT/LESSEN IS VOOR DE LESSEN PAGINA IN DE NAVBAR
-@app.route('/docent/lessen', methods=["GET","POST"])
-def docent_alle_lessen():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM lessen")
-    result = c.fetchall()
-    conn.close()
-    return render_template('docent_overzicht_lessen.html', lessen=result)
-
-@app.route("/docent/lessen.json", methods=["GET", "POST"])
-def lessen():
-
-    json_path = os.path.join('lessen.json')
-
-
-    with open(json_path, 'r') as json_file:
-        json_data = json_file.read()
-
-    return jsonify(json_data)
-
-
-
-
-## API ROUTES
-@app.route('/API/leerlingen')
-def export_leerlingen():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM leerlingen")
-    rows = cur.fetchall()
-    result = []
-    for row in rows:
-        result.append(dict(row))
-    return jsonify(result)
 
 @app.route('/API/lessen', methods=["GET", "POST"])
 def export_lessen():
@@ -310,6 +348,7 @@ def export_lessen():
     for row in rows:
         result.append(dict(row))
     return jsonify(result)
+
 
 @app.route('/API/les/<int:id>')
 def les_overzicht_api(id):
@@ -344,57 +383,10 @@ def update_code(vak):
         conn.close()
         time.sleep(1.5)
 
-@app.route('/docent/lessen/code', methods=['GET', 'POST'])
-def docent_lessen_code():
-    if request.method == 'POST':
-        vak = request.form['vak']
-        code = random.randint(1000, 9999)
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
-        conn.commit()
-        c.execute("SELECT code FROM lessen WHERE vak=?", (vak,))
-        row = c.fetchone()
-        conn.close()
-        code = row[0] if row else None
 
-        # Start de update_code() functie in een aparte thread
-        t = threading.Thread(target=update_code, args=(vak,))
-        t.start()
-
-        return redirect(url_for('docent_lessen_code', code=code))
-
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT DISTINCT vak FROM lessen")
-    vakken = c.fetchall()
-    conn.close()
-
-    code = request.args.get('code')
-
-    return render_template('docent_lessen_code.html', vakken=vakken, code=code)
-
-
-@app.route('/')
-def index_admin():
-    return render_template('index.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login_admin():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM admin WHERE gebruikersnaam = ? AND wachtwoord = ?", (username, password))
-        user = c.fetchone()
-        if user:
-            session['user'] = user
-            return redirect(url_for('admin'))
-        else:
-            return render_template('login.html', error='Invalid username or password')
-    else:
-        return render_template('login.html')
+# Admin grud paneel routes
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
 
 @app.route('/admin')
@@ -436,6 +428,7 @@ def save_leerling(leerling_id):
     flash('Leerling not updated', 'danger')
     return redirect(url_for('admin'))
 
+
 @app.route('/edit_docent/<int:docent_id>', methods=['GET', 'POST'])
 def edit_docent(docent_id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -456,6 +449,7 @@ def edit_docent(docent_id):
         return redirect(url_for('admin'))
     return render_template('edit_docent.html', docent=docent)
 
+
 @app.route('/add_leerling', methods=['GET', 'POST'])
 def add_leerling():
     if request.method == 'POST':
@@ -471,6 +465,7 @@ def add_leerling():
         flash('Leerling toegevoegd', 'success')
         return redirect(url_for('admin'))
     return render_template('admin.html')
+
 
 @app.route('/add_docent', methods=['GET', 'POST'])
 def add_docent():
