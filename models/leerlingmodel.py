@@ -2,6 +2,7 @@ import sqlite3
 
 
 class LeerlingModel:
+<<<<<<< HEAD
     def alle_lessen(self):
         conn = sqlite3.connect('aanwezigheidssysteem.db')
         c = conn.cursor()
@@ -48,3 +49,8 @@ class LeerlingModel:
         conn.commit()
         conn.close()
 
+=======
+    def leerling_aanwezigheid(self):
+        conn =- 1
+    
+>>>>>>> origin/David
