@@ -11,6 +11,7 @@ import time
 from models.lessenmodel import LessenModel
 from models.loginmodel import LoginModel
 from models.leerlingmodel import LeerlingModel
+from models.docentmodel import DocentModel
 
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
@@ -24,6 +25,7 @@ CORS(app)
 lessen_model = LessenModel()
 login_model = LoginModel()
 leerling_model = LeerlingModel()
+docent_model = DocentModel()
 
 # Login routes
 #-----------------------------------------------------------------------------
@@ -39,12 +41,7 @@ def index():
 def login_docent():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]
-    conn = sqlite3.connect("aanwezigheidssysteem.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM docenten WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
-    docent = c.fetchone()
-    conn.close()
-
+    docent = login_model.get_docent_login(gebruikersnaam, wachtwoord)
     if docent:
         session["gebruikersnaam"] = docent[2]
         session["docent_id"] = docent[0]
@@ -78,12 +75,7 @@ def get_db_connection():
 def login_leerling():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]
-    conn = sqlite3.connect("aanwezigheidssysteem.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM leerlingen WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
-    leerling = c.fetchone()
-    conn.close()
-
+    leerling = login_model.get_leerling_login(gebruikersnaam, wachtwoord)
     if leerling:
         session["gebruikersnaam"] = leerling[2]
         session["leerling_id"] = leerling[0]
@@ -159,21 +151,22 @@ def docent_dashboard():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
 
-    if request.method == 'POST':
-        les_id = request.form['les_id']
-        aanwezigheid = request.form['aanwezigheid']
+    # if request.method == 'POST':
+    #     les_id = request.form['les_id']
+    #     aanwezigheid = request.form['aanwezigheid']
 
-        c.execute("UPDATE lessen SET aanwezigheid=? WHERE id=?", (aanwezigheid, les_id))
-        conn.commit()
+    #     c.execute("UPDATE lessen SET aanwezigheid=? WHERE id=?", (aanwezigheid, les_id))
+    #     conn.commit()
 
-        flash('Aanwezigheidsstatus bijgewerkt!')
+    #     flash('Aanwezigheidsstatus bijgewerkt!')
 
-    c.execute("SELECT * FROM lessen")
-    lessen = c.fetchall()
-
-    c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id")
-    rows = c.fetchall()
-
+    # c.execute("SELECT * FROM lessen")
+    # lessen = c.fetchall()
+    lessen = docent_model.get_alle_lessen()
+    # c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id")
+    # rows = c.fetchall()
+    rows = docent_model.get_leerling_details()
+    
     docent_dict = {}
     c.execute("SELECT docent_id, naam FROM docenten")
     for docent in c.fetchall():

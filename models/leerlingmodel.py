@@ -7,4 +7,5 @@ def get_db_connection():
 
 class LeerlingModel:
     def leerling_aanwezigheid(self):
-       
+        conn =- 1
+    
