@@ -29,14 +29,6 @@ class LessenModel:
             conn.close()
             return None
 
-    def lessen_toevoegen(self, vak, datum, starttijd, eindtijd, docent_id):
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute('INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)',(vak, datum, starttijd, eindtijd, docent_id))
-        conn.commit()
-        conn.close()
-        import sqlite3
-
     def alle_lessen(self):
         conn = sqlite3.connect('aanwezigheidssysteem.db')
         conn.row_factory = sqlite3.Row
@@ -48,5 +40,31 @@ class LessenModel:
             result.append(dict(row))
         conn.close()
         return result
+
+    
+    def get_all_klassen(self):
+            conn = sqlite3.connect('aanwezigheidssysteem.db')
+            c = conn.cursor()
+            klassen = c.execute("SELECT klas_id, lesnaam FROM klassen").fetchall()
+            conn.close()
+            return klassen
+
+    def add_lesson(self, vak, datum, starttijd, eindtijd, docent_id, klas_id):
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id, code) VALUES (?, ?, ?, ?, ?, ?)",
+                (vak, datum, starttijd, eindtijd, docent_id, klas_id))
+        conn.commit()
+        conn.close()
+
+    def lessen_toevoegen(self, vak, datum, starttijd, eindtijd, docent_id):
+        import sqlite3
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute('INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)',(vak, datum, starttijd, eindtijd, docent_id))
+        conn.commit()
+        conn.close()
+        import sqlite3
+
     
 

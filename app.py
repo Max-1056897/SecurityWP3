@@ -42,12 +42,7 @@ def index():
 def login_docent():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]
-<<<<<<< HEAD
-    docent = login_model.docent_login(gebruikersnaam, wachtwoord)
-
-=======
     docent = login_model.get_docent_login(gebruikersnaam, wachtwoord)
->>>>>>> origin/David
     if docent:
         session["gebruikersnaam"] = docent[2]
         session["docent_id"] = docent[0]
@@ -233,7 +228,6 @@ def docent_lessen_code():
         conn.close()
         code = row[0] if row else None
 
-        # Start de update_code() functie in een aparte thread
         t = threading.Thread(target=update_code, args=(vak,))
         t.start()
 
@@ -255,7 +249,6 @@ def delete_code(id):
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
 
-    # Verwijder de code uit de database
     c.execute("UPDATE lessen SET code=NULL WHERE les_id=?", (id,))
     conn.commit()
 
@@ -263,7 +256,6 @@ def delete_code(id):
 
     flash('Code verwijderd!')
 
-    # Stuur de gebruiker terug naar de docent dashboard pagina
     return redirect(url_for('docent_dashboard',id=id))
 
 
@@ -292,7 +284,7 @@ def add_les():
     eindtijd = request.form['eindtijd']
     docent_id = request.form['docent_id']
     lessen = lessen_model.lessen_toevoegen(vak, datum, starttijd, eindtijd, docent_id)
-    return redirect('/docent/lessen', lessen=lessen)
+    return redirect('/docent/lessen')
 
 
 def exporteer_lessen():

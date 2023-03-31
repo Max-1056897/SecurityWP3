@@ -1,26 +1,15 @@
 import sqlite3
 
 class LoginModel:
-<<<<<<< HEAD
-    def docent_login(self, gebruikersnaam, wachtwoord):
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM docenten WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
-        docent = c.fetchone()
-        conn.close()
-        return docent
-=======
-    class DocentModel:
-        def get_docent_login(self, gebruikersnaam, wachtwoord):
+    def get_docent_login(self, gebruikersnaam, wachtwoord):
             conn = sqlite3.connect("aanwezigheidssysteem.db")
             c = conn.cursor()
             c.execute("SELECT * FROM docenten WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
             docent = c.fetchone()
             conn.close()
             return docent
-        
-    class LeerlingModel: 
-        def get_leerling_login(self, gebruikersnaam, wachtwoord):
+
+    def get_leerling_login(self, gebruikersnaam, wachtwoord):
             conn = sqlite3.connect("aanwezigheidssysteem.db")
             c = conn.cursor()
             c.execute("SELECT * FROM leerlingen WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
@@ -28,4 +17,3 @@ class LoginModel:
             conn.close()
             return leerling
                 
->>>>>>> origin/David
