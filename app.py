@@ -25,6 +25,7 @@ lessen_model = LessenModel()
 login_model = LoginModel()
 leerling_model = LeerlingModel()
 
+
 # Login routes
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
@@ -39,11 +40,7 @@ def index():
 def login_docent():
     gebruikersnaam = request.form["gebruikersnaam"]
     wachtwoord = request.form["wachtwoord"]
-    conn = sqlite3.connect("aanwezigheidssysteem.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM docenten WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
-    docent = c.fetchone()
-    conn.close()
+    docent = login_model.docent_login(gebruikersnaam, wachtwoord)
 
     if docent:
         session["gebruikersnaam"] = docent[2]
@@ -51,7 +48,6 @@ def login_docent():
         return redirect("/docent_dashboard")
     else:
         return render_template("index.html", error="Ongeldige gebruikersnaam of wachtwoord")
-
 
 def get_db_connection():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
@@ -69,7 +65,7 @@ def get_db_connection():
 #             session['user'] = user
 #             return redirect(url_for('admin'))
 #         else:
-#             return render_template('login.html', error='Invalid username or password')
+#             return render_tedocentmplate('login.html', error='Invalid username or password')
 #     else:
 #         return render_template('login.html', login=login)
 
@@ -99,54 +95,36 @@ def login_leerling():
 
 @app.route('/leerling_dashboard', methods=["POST", "GET"])
 def leerling_dashboard():
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute('SELECT * FROM lessen')
-    lessen = c.fetchall()
+    lessen = leerling_model.alle_lessen()
     if request.method == 'POST':
         # Invoer van de student ophalen uit het formulier
         code = request.form['code']
 
-        # Controleren of de code overeenkomt met de code in de database
-        c.execute("SELECT * FROM lessen WHERE code=?", (code,))
-        vak = c.fetchone()
-        if vak is None:
-            print('Nee')
-        else:
-            # Student aanwezigheid in de database opslaan
-            leerling_id = session.get('leerling_id')
-            les_id = vak[0] # haal de les_id op uit de database
-            c.execute("INSERT INTO aanwezigheid (aanwezigheid_id, leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?, ?)", (None, leerling_id, les_id, True, ''))
-            conn.commit()
+        # Student aanwezigheid controleren en opslaan in de database
+        leerling_id = session.get('leerling_id')
+        success = leerling_model.leerling_aanwezigheid_toevoegen(code, leerling_id)
+        if success:
             return redirect('/leerling_dashboard')
-    conn.close()
+        else:
+            print('Nee')
     return render_template('leerling_dashboard.html', lessen=lessen)
+
 
 @app.route('/API/leerlingen')
 def export_leerlingen():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM leerlingen")
-    rows = cur.fetchall()
-    result = []
-    for row in rows:
-        result.append(dict(row))
-    return jsonify(result)
+    leerlingen = leerling_model.alle_leerlingen()
+    return jsonify(leerlingen)
 
 
 @app.route('/aanwezigheid', methods=['POST'])
 def aanwezigheid():
-    conn = get_db_connection()
-    c = conn.cursor()
+    leerling_id = 1 # Voeg hier de juiste leerling_id toe
+    les_id = request.form.getlist('les_id')
     aanwezigheid = request.form.getlist('aanwezigheid')
     reden_afwezigheid = request.form.getlist('reden')
-    for i in range(len(aanwezigheid)):
-        c.execute('INSERT INTO aanwezigheid (leerling_id, les_id, aanwezig, reden) VALUES (?, ?, ?, ?)',
-                  (1, i+1, aanwezigheid[i], reden_afwezigheid[i]))
-    conn.commit()
-    conn.close()
+    leerling_model.toevoegen_aanwezigheid(leerling_id, les_id, aanwezigheid, reden_afwezigheid)
     return 'Aanwezigheid opgeslagen!'
+
 
 
 # Docent routes
@@ -294,60 +272,35 @@ def delete_code(id):
 
 @app.route('/les/<int:id>')
 def les_overzicht(id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-
-    c.execute("SELECT vak FROM lessen WHERE les_id=?", (id,))
-    vak = c.fetchone()
-
-    # Haal de lesgegevens op
-    c.execute("SELECT * FROM lessen WHERE les_id=?", (id,))
-    les = c.fetchone()
-
-    if les:
-        # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
-        c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, aanwezigheid.reden FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
-        aanwezigheden = c.fetchall()
-        c.execute("SELECT COUNT(*) FROM aanwezigheid WHERE les_id=? AND aanwezig=1", (id,))
-        count = c.fetchone()[0]
-
-        conn.close()
-
-        # Render de template met de aanwezigheidsgegevens en de lesgegevens
+    data = lessen_model.lessen_overzicht(id)
+    if data:
+        # De les is gevonden, render de template met de aanwezigheidsgegevens en de lesgegevens
+        aanwezigheden, les, vak, count = data
         return render_template('les.html', aanwezigheden=aanwezigheden, les=les, vak=vak, count=count)
     else:
         # De les is niet gevonden, geef een foutmelding
-        conn.close()
         return "Les niet gevonden"
 
 
 @app.route('/add_les', methods=['POST'])
 def add_les():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
     vak = request.form['vak']
     datum = request.form['datum']
     starttijd = request.form['starttijd']
     eindtijd = request.form['eindtijd']
     docent_id = request.form['docent_id']
-    c.execute('INSERT INTO lessen (vak, datum, starttijd, eindtijd, docent_id) VALUES (?, ?, ?, ?, ?)',
-    (vak, datum, starttijd, eindtijd, docent_id))
-    conn.commit()
-    conn.close()
-    return redirect('/docent/lessen')
+    lessen = lessen_model.lessen_toevoegen(vak, datum, starttijd, eindtijd, docent_id)
+    return redirect('/docent/lessen', lessen=lessen)
 
+
+def exporteer_lessen():
+        lessen = lessen_model.alle_lessen()
+        return jsonify(lessen)
 
 @app.route('/API/lessen', methods=["GET", "POST"])
 def export_lessen():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM lessen")
-    rows = cur.fetchall()
-    result = []
-    for row in rows:
-        result.append(dict(row))
-    return jsonify(result)
+    lessen = exporteer_lessen()
+    return lessen
 
 
 @app.route('/API/les/<int:id>')
@@ -372,6 +325,7 @@ def les_overzicht_api(id):
         # De les is niet gevonden, geef een foutmelding
         conn.close()
         return jsonify(error="Les niet gevonden")
+
 
 def update_code(vak):
     while True:
