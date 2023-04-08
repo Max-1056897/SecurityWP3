@@ -202,11 +202,12 @@ def docent_lessen_toevoegen_post():
 @app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
 def docent_lessen_overzicht():
     docent_id = 1
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
-    result = c.fetchall()
-    conn.close()
+    # conn = sqlite3.connect('aanwezigheidssysteem.db')
+    # c = conn.cursor()
+    # c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+    # result = c.fetchall()
+    # conn.close()
+    result = docent_model.get_docent_lessen_overzicht()
     return render_template('docent_lessen.html', lessen=result)
 
 
