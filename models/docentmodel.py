@@ -23,3 +23,11 @@ class DocentModel:
          rows = c.fetchall()
          conn.close()
          return rows
+    
+    def get_docent_lessen_overzicht(self, docent_id):
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
+        result = c.fetchall()
+        conn.close()
+        return result
