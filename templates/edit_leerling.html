@@ -34,24 +34,25 @@
       &nbsp;
     <div class="container">
       <h1>Edit Leerling</h1>
-      <form method="POST" action="/edit_leerling/{{ leerlingen[0] }}" class="form">
+      <form action="{{ url_for('edit_leerling', leerling_id=leerling[0]) }}" method="post">
         <div class="form-group">
           <label for="naam">Naam:</label>
-          <input type="text" name="naam" value="{{ leerlingen[1] }}" class="form-control">
+          <input type="text" name="naam" value="{{ leerling[1] }}" class="form-control">
         </div>
         <div class="form-group">
           <label for="gebruikersnaam">Gebruikersnaam:</label>
-          <input type="text" name="gebruikersnaam" value="{{ leerlingen[2] }}" class="form-control">
+          <input type="text" name="gebruikersnaam" value="{{ leerling[2] }}" class="form-control">
         </div>
         <div class="form-group">
           <label for="wachtwoord">Wachtwoord:</label>
-          <input type="password" name="wachtwoord" value="{{ leerlingen[3] }}" class="form-control">
+          <input type="password" name="wachtwoord" value="{{ leerling[3] }}" class="form-control">
         </div>
         <div class="form-group">
           <label for="rooster">Rooster:</label>
-          <input type="text" name="rooster" value="{{ leerlingen[4] }}" class="form-control">
+          <input type="text" name="rooster" value="{{ leerling[4] }}" class="form-control">
         </div>
         <button type="submit" class="btn btn-primary">Opslaan</button>
+        <a href="{{ url_for('admin') }}" class="btn btn-secondary">Annuleren</a>
       </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

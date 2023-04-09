@@ -300,7 +300,7 @@ def admin():
 
 @app.route('/edit_leerling/<int:leerling_id>', methods=['GET', 'POST'])
 def edit_leerling(leerling_id):
-    leerlingen = admin_model.get_alle_leerlingen()
+    leerling = admin_model.get_one_leerlingen(leerling_id)
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
@@ -309,7 +309,7 @@ def edit_leerling(leerling_id):
         admin_model.update_leerling(naam, gebruikersnaam, wachtwoord, rooster, leerling_id)
         # flash('Leerling updated successfully', 'success')
         return redirect(url_for('admin'))
-    return render_template('edit_leerling.html', leerlingen=leerlingen)
+    return render_template('edit_leerling.html', leerling=leerling, leerling_id=leerling_id)
 
 
 @app.route('/save_leerling/<int:leerling_id>')

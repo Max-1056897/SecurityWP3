@@ -17,6 +17,13 @@ class AdminModel:
         conn.close()
         return docenten
     
+    def get_one_leerlingen(self, leerling_id):
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM leerlingen WHERE leerling_id = ?", (leerling_id,))
+        leerling = c.fetchone()
+        return leerling
+
     def update_leerling(self, naam, gebruikersnaam, wachtwoord, rooster, leerling_id):
         conn = sqlite3.connect('aanwezigheidssysteem.db')
         c = conn.cursor()
