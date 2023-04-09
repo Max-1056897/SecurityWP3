@@ -320,7 +320,7 @@ def save_leerling(leerling_id):
 
 @app.route('/edit_docent/<int:docent_id>', methods=['GET', 'POST'])
 def edit_docent(docent_id):
-    docent = admin_model.get_docent_id(docent_id, docent)
+    docent = admin_model.get_docent_id(docent_id)
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
@@ -328,7 +328,7 @@ def edit_docent(docent_id):
         admin_model.update_docent(naam, gebruikersnaam, wachtwoord, docent_id)
         # flash('Docent updated successfully', 'success')
         return redirect(url_for('admin'))
-    return render_template('edit_docent.html', docent=docent)
+    return render_template('edit_docent.html', docent=docent, docent_id=docent_id)
 
 
 @app.route('/add_leerling', methods=['GET', 'POST'])

@@ -31,7 +31,7 @@ class AdminModel:
         c = conn.cursor()
         c.execute('SELECT * FROM docenten WHERE docent_id = ?', (docent_id,))
         docent = c.fetchone()
-        return docent, docent_id
+        return docent
 
     def update_docent(self,naam, gebruikersnaam, wachtwoord, docent_id):
         conn = sqlite3.connect('aanwezigheidssysteem.db')
