@@ -283,7 +283,7 @@ def les_overzicht_api(id):
 def update_code(vak):
     while True:
         lessen_model.code_update(vak)
-        time.sleep(1.5)
+        time.sleep(15)
 
 
 # Admin grud paneel routes
