@@ -12,6 +12,7 @@ from models.lessenmodel import LessenModel
 from models.loginmodel import LoginModel
 from models.leerlingmodel import LeerlingModel
 from models.docentmodel import DocentModel
+from models.adminmodel import AdminModel
 
 LISTEN_ALL = "0.0.0.0"
 FLASK_IP = LISTEN_ALL
@@ -26,6 +27,7 @@ lessen_model = LessenModel()
 login_model = LoginModel()
 leerling_model = LeerlingModel()
 docent_model = DocentModel()
+admin_model = AdminModel()
 
 
 # Login routes
@@ -132,21 +134,7 @@ def aanwezigheid():
 def docent_dashboard():
     conn = sqlite3.connect('aanwezigheidssysteem.db')
     c = conn.cursor()
-
-    # if request.method == 'POST':
-    #     les_id = request.form['les_id']
-    #     aanwezigheid = request.form['aanwezigheid']
-
-    #     c.execute("UPDATE lessen SET aanwezigheid=? WHERE id=?", (aanwezigheid, les_id))
-    #     conn.commit()
-
-    #     flash('Aanwezigheidsstatus bijgewerkt!')
-
-    # c.execute("SELECT * FROM lessen")
-    # lessen = c.fetchall()
     lessen = docent_model.get_alle_lessen()
-    # c.execute("SELECT leerlingen.naam, aanwezigheid.aanwezig, lessen.vak, docenten.naam FROM aanwezigheid INNER JOIN lessen ON aanwezigheid.les_id = lessen.les_id INNER JOIN leerlingen ON aanwezigheid.leerling_id = leerlingen.leerling_id INNER JOIN docenten ON lessen.docent_id = docenten.docent_id")
-    # rows = c.fetchall()
     rows = docent_model.get_leerling_details()
     
     docent_dict = {}
@@ -184,23 +172,14 @@ def docent_lessen_toevoegen_post():
 @app.route('/docent/lessen/overzicht', methods= ["GET", "POST"])
 def docent_lessen_overzicht():
     docent_id = 1
-    # conn = sqlite3.connect('aanwezigheidssysteem.db')
-    # c = conn.cursor()
-    # c.execute("SELECT * FROM lessen WHERE docent_id=?", (docent_id,))
-    # result = c.fetchall()
-    # conn.close()
     result = docent_model.get_docent_lessen_overzicht()
     return render_template('docent_lessen.html', lessen=result)
 
 
 @app.route('/docent/lessen', methods=["GET","POST"])
 def docent_alle_lessen():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM lessen")
-    result = c.fetchall()
-    conn.close()
-    return render_template('docent_overzicht_lessen.html', lessen=result)
+    lessen = docent_model.get_alle_lessen()
+    return render_template('docent_overzicht_lessen.html', lessen=lessen)
 
 
 @app.route("/docent/lessen.json", methods=["GET", "POST"])
@@ -247,17 +226,9 @@ def docent_lessen_code():
 
 @app.route('/delete_code/<int:id>', methods=['POST', 'GET'])
 def delete_code(id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-
-    c.execute("UPDATE lessen SET code=NULL WHERE les_id=?", (id,))
-    conn.commit()
-
-    conn.close()
-
+    docent_model.delete_code(id)
     flash('Code verwijderd!')
-
-    return redirect(url_for('docent_dashboard',id=id))
+    return redirect(url_for('docent_dashboard', id=id))
 
 
 # Les routes
@@ -300,36 +271,18 @@ def export_lessen():
 
 @app.route('/API/les/<int:id>')
 def les_overzicht_api(id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-
-    # Haal de lesgegevens op
-    c.execute("SELECT * FROM lessen WHERE les_id=?", (id,))
-    les = c.fetchone()
-
-    if les:
-        # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
-        c.execute("SELECT leerlingen.naam FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
-        aanwezigheid_naam = c.fetchall()
-        c.execute("SELECT aanwezigheid.aanwezig FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (id,))
-        aanwezigheid_aanwezig = c.fetchall()
-        conn.close()
-        # Geef een JSON-response met de aanwezigheidsgegevens en de lesgegevens
-        return jsonify(aanwezigheid_naam=aanwezigheid_naam,aanwezigheid_aanwezig=aanwezigheid_aanwezig, les=les)
-    else:
+    les = lessen_model.get_les(id)
+    
+    if 'error' in les:
         # De les is niet gevonden, geef een foutmelding
-        conn.close()
-        return jsonify(error="Les niet gevonden")
-
+        return jsonify(les)
+    else:
+        # De les is gevonden, geef een JSON-response met de aanwezigheidsgegevens en de lesgegevens
+        return jsonify(les)
 
 def update_code(vak):
     while True:
-        code = random.randint(1000, 9999)
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
-        conn.commit()
-        conn.close()
+        lessen_model.code_update(vak)
         time.sleep(1.5)
 
 
@@ -340,36 +293,23 @@ def update_code(vak):
 
 @app.route('/admin')
 def admin():
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM leerlingen")
-    leerlingen = c.fetchall()
-    c.execute("SELECT * FROM docenten")
-    docenten = c.fetchall()
-    conn.close()
+    leerlingen = admin_model.get_alle_leerlingen()
+    docenten = admin_model.get_alle_docenten()
     return render_template('admin.html', leerlingen=leerlingen, docenten=docenten)
 
 
 @app.route('/edit_leerling/<int:leerling_id>', methods=['GET', 'POST'])
 def edit_leerling(leerling_id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM leerlingen WHERE leerling_id = ?', (leerling_id,))
-    leerling = c.fetchone()
-    conn.close()
+    leerlingen = admin_model.get_alle_leerlingen()
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
         wachtwoord = request.form['wachtwoord']
         rooster = request.form['rooster']
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute('UPDATE leerlingen SET naam = ?, gebruikersnaam = ?, wachtwoord = ?, rooster = ? WHERE leerling_id = ?', (naam, gebruikersnaam, wachtwoord, rooster, leerling_id))
-        conn.commit()
-        conn.close()
+        admin_model.update_leerling(naam, gebruikersnaam, wachtwoord, rooster, leerling_id)
         # flash('Leerling updated successfully', 'success')
         return redirect(url_for('admin'))
-    return render_template('edit_leerling.html', leerling=leerling)
+    return render_template('edit_leerling.html', leerlingen=leerlingen)
 
 
 @app.route('/save_leerling/<int:leerling_id>')
@@ -380,20 +320,12 @@ def save_leerling(leerling_id):
 
 @app.route('/edit_docent/<int:docent_id>', methods=['GET', 'POST'])
 def edit_docent(docent_id):
-    conn = sqlite3.connect('aanwezigheidssysteem.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM docenten WHERE docent_id = ?', (docent_id,))
-    docent = c.fetchone()
-    conn.close()
+    docent = admin_model.get_docent_id(docent_id, docent)
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
         wachtwoord = request.form['wachtwoord']
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute('UPDATE docenten SET naam = ?, gebruikersnaam = ?, wachtwoord = ? WHERE docent_id = ?', (naam, gebruikersnaam, wachtwoord, docent_id))
-        conn.commit()
-        conn.close()
+        admin_model.update_docent(naam, gebruikersnaam, wachtwoord, docent_id)
         # flash('Docent updated successfully', 'success')
         return redirect(url_for('admin'))
     return render_template('edit_docent.html', docent=docent)
@@ -406,11 +338,7 @@ def add_leerling():
         gebruikersnaam = request.form['gebruikersnaam']
         wachtwoord = request.form['wachtwoord']
         rooster = request.form['rooster']
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute('INSERT INTO leerlingen (naam, gebruikersnaam, wachtwoord, rooster) VALUES (?, ?, ?, ?)', (naam, gebruikersnaam, wachtwoord, rooster))
-        conn.commit()
-        conn.close()
+        admin_model.leerling_add(naam, gebruikersnaam, wachtwoord, rooster)
         flash('Leerling toegevoegd', 'success')
         return redirect(url_for('admin'))
     return render_template('admin.html')
@@ -422,16 +350,10 @@ def add_docent():
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
         wachtwoord = request.form['wachtwoord']
-        conn = sqlite3.connect('aanwezigheidssysteem.db')
-        c = conn.cursor()
-        c.execute('INSERT INTO docenten (naam, gebruikersnaam, wachtwoord) VALUES (?, ?, ?)', (naam, gebruikersnaam, wachtwoord))
-        conn.commit()
-        conn.close()
+        admin_model.docent_add(naam, gebruikersnaam, wachtwoord)
         flash('Docent toegevoegd', 'success')
         return redirect(url_for('admin'))
     return render_template('admin.html')
-
-
 
 
 if __name__ == "__main__":

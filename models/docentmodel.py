@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 class DocentModel:
     def get_docent_login(self, gebruikersnaam, wachtwoord):
@@ -31,3 +32,9 @@ class DocentModel:
         result = c.fetchall()
         conn.close()
         return result
+
+    def delete_code(self, les_id):
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=NULL WHERE les_id=?", (les_id,))
+        conn.commit()

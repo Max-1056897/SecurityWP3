@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 
 class LessenModel:
@@ -66,5 +67,33 @@ class LessenModel:
         conn.close()
         import sqlite3
 
-    
+    def get_les(self, les_id):
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
 
+        # Haal de lesgegevens op
+        c.execute("SELECT * FROM lessen WHERE les_id=?", (les_id,))
+        les = c.fetchone()
+
+        if les:
+            # De les is gevonden, haal de aanwezigheidsgegevens op voor deze les
+            c.execute("SELECT leerlingen.naam FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (les_id,))
+            aanwezigheid_naam = c.fetchall()
+            c.execute("SELECT aanwezigheid.aanwezig FROM aanwezigheid JOIN leerlingen ON aanwezigheid.leerling_id=leerlingen.leerling_id WHERE aanwezigheid.les_id=?", (les_id,))
+            aanwezigheid_aanwezig = c.fetchall()
+            
+            # Sluit de databaseverbinding en geef de aanwezigheidsgegevens en de lesgegevens terug
+            conn.close()
+            return {'aanwezigheid_naam': aanwezigheid_naam, 'aanwezigheid_aanwezig': aanwezigheid_aanwezig, 'les': les}
+        else:
+            # De les is niet gevonden, geef een foutmelding en sluit de databaseverbinding
+            conn.close()
+            return {'error': 'Les niet gevonden'}
+        
+    def code_update(self, vak):
+        code = random.randint(1000, 9999)
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
+        c = conn.cursor()
+        c.execute("UPDATE lessen SET code=? WHERE vak=?", (code, vak))
+        conn.commit()
+        conn.close()
