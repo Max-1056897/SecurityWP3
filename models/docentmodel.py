@@ -1,9 +1,10 @@
 import sqlite3
 import random
 
+
 class DocentModel:
     def get_docent_login(self, gebruikersnaam, wachtwoord):
-        conn = sqlite3.connect("aanwezigheidssysteem.db")
+        conn = sqlite3.connect('aanwezigheidssysteem.db')
         c = conn.cursor()
         c.execute("SELECT * FROM docenten WHERE gebruikersnaam = ? AND wachtwoord = ?", (gebruikersnaam, wachtwoord))
         docent = c.fetchone()

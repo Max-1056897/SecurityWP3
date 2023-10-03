@@ -7,7 +7,7 @@ from flask_cors import CORS
 import random
 import threading
 import time
-
+import bcrypt
 from models.lessenmodel import LessenModel
 from models.loginmodel import LoginModel
 from models.leerlingmodel import LeerlingModel
@@ -336,9 +336,11 @@ def add_leerling():
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
-        wachtwoord = request.form['wachtwoord']
+        plain_password = request.form['wachtwoord']  # Get the plain text password
         rooster = request.form['rooster']
-        admin_model.leerling_add(naam, gebruikersnaam, wachtwoord, rooster)
+        hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+
+        admin_model.leerling_add(naam, gebruikersnaam, hashed_password, rooster)
         flash('Leerling toegevoegd', 'success')
         return redirect(url_for('admin'))
     return render_template('admin.html')
@@ -349,8 +351,14 @@ def add_docent():
     if request.method == 'POST':
         naam = request.form['naam']
         gebruikersnaam = request.form['gebruikersnaam']
-        wachtwoord = request.form['wachtwoord']
-        admin_model.docent_add(naam, gebruikersnaam, wachtwoord)
+        plain_password = request.form['wachtwoord']  # Get the plain text password
+
+        # Hash the password using bcrypt
+        hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+
+        # Now, you can store the hashed_password in your database
+        admin_model.docent_add(naam, gebruikersnaam, hashed_password)
+
         flash('Docent toegevoegd', 'success')
         return redirect(url_for('admin'))
     return render_template('admin.html')
